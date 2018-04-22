@@ -108,7 +108,9 @@ while True:
     if "puzzle" in message:
         print "client wants a puzzle"
         c.send(puzzle)
-
+        print "sent puzzle... now wait"
+    
+    answer = c.recv(1024)
 
     # Close the connection with the client
     c.close()

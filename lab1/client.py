@@ -30,7 +30,7 @@ print ('sent first message')
 
 
 print ('second message:')
-print s.recv(4096)
+print s.recv(1024)
 
 # close the connection
 s.close()      
