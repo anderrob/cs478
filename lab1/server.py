@@ -60,7 +60,7 @@ def hide_bits(preImage, k):
 
 # generate the puzzle for the client to solve
 def generate_puzzle():
-    compute = str(get_time()) + random_string() + random_string()
+    compute = str(get_time()) + random_string(4) + random_string(4)
     hash_string(compute)
     pre_image = hide_bits(1)
     return hash_string(pre_image)
