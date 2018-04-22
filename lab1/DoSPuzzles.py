@@ -39,11 +39,18 @@ def random_string(length):
         i += 1
     return initial
 
+# remove k bits from the pre-image
+def hide_bits(preImage, k):
+    i = len(preImage)-k
+    return preImage[0:i]
 
 def generate_puzzle():
     return random_string(4)
 
 def main():
-    print generate_puzzle()
+    puzzle = generate_puzzle()
+    print puzzle
+    print hide_bits(puzzle, 1)
+
 
 main()
