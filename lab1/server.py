@@ -37,7 +37,7 @@ random.seed
 
 # get current time
 def get_time():
-    return str(math.floor(time.time())[:-2])
+    return (str(math.floor(time.time()))[:-2])
 
 puzzle = "the actual puzzle."
 
