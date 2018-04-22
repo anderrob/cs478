@@ -28,6 +28,7 @@ import hashlib
 import md5
 import string
 import datetime
+import math
 
 # first of all import the socket library
 import socket
@@ -37,7 +38,7 @@ random.seed
 # get current time
 def get_time():
     return time.time()
-    
+
 puzzle = "the actual puzzle."
 
 
@@ -104,7 +105,7 @@ while True:
     print message
     if "puzzle" in message:
         print "client wants a puzzle"
-        c.send('Yes, puzzle.' +  puzzle + str( '{0:g}'.format(time.time())) )
+        c.send('Yes, puzzle.' +  puzzle + (str( math.floor(time.time()))[:-2]) )
 
 
     # Close the connection with the client
