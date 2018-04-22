@@ -80,13 +80,19 @@ print "socket is listening"
 # a forever loop until we interrupt it or
 # an error occurs
 while True:
+    
+    # Establish connection with client.
+    c, addr = s.accept()     
+    print 'Got connection from', addr
+ 
+    # send a thank you message to the client. 
+    c.send('Thank you for connecting')
+    
+    message = c.recv(1024)
+    if "puzzle" in message:
+        print "client wants a puzzle"
+        c.send('Yes, puzzle.' + message)
 
-   # Establish connection with client.
-   c, addr = s.accept()
-   print 'Got connection from', addr
 
-   # send a thank you message to the client.
-   c.send('Thank you for connecting')
-
-   # Close the connection with the client
-   c.close()
+    # Close the connection with the client
+    c.close()
