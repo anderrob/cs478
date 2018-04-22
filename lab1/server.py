@@ -37,7 +37,7 @@ random.seed
 
 # get current time
 def get_time():
-    return time.time()
+    return str(math.floor(time.time())[:-2])
 
 puzzle = "the actual puzzle."
 
@@ -64,7 +64,7 @@ def hide_bits(preImage, k):
 
 # generate the puzzle for the client to solve
 def generate_puzzle():
-    compute = str(get_time()) + random_string(4) + random_string(4)
+    compute = get_time() + random_string(4) + random_string(4)
     compute_hash = hash_string(compute)
     pre_image = hide_bits(compute_hash, 1)
     return hash_string(pre_image)
@@ -103,10 +103,11 @@ while True:
 
     message = c.recv(1024)
 
+    puzzle = generate_puzzle()
     print message
     if "puzzle" in message:
         print "client wants a puzzle"
-        c.send('Yes, puzzle.' +  puzzle + (str( math.floor(time.time()))[:-2]) )
+        c.send(puzzle)
 
 
     # Close the connection with the client
