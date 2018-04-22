@@ -37,6 +37,9 @@ random.seed
 # get current time
 def get_time():
     return time.time()
+    
+puzzle = "the actual puzzle."
+
 
 # get the hash value of a given string
 def hash_string(s):
@@ -98,9 +101,11 @@ while True:
     c.send('Thank you for connecting')
 
     message = c.recv(1024)
+
+    print message
     if "puzzle" in message:
         print "client wants a puzzle"
-        c.send('Yes, puzzle.' + message)
+        c.send('Yes, puzzle.' +  puzzle + str( '{0:g}'.format(time.time())) )
 
 
     # Close the connection with the client
