@@ -31,6 +31,13 @@ import random
 
 random.seed
 
+# get the hash value of a given string
+def hash_string(s):
+    m = hashlib.md5()
+    m.update(s)
+    return m.hexdigest()
+
+# generate random string of given length
 def random_string(length):
     initial = ""
     i = 0
@@ -44,6 +51,7 @@ def hide_bits(preImage, k):
     i = len(preImage)-k
     return preImage[0:i]
 
+# generate the puzzle for the client to solve
 def generate_puzzle():
     return random_string(4)
 
