@@ -27,11 +27,16 @@ import multiprocessing
 import hashlib
 import md5
 import string
+import datetime
 
 # first of all import the socket library
 import socket
 
 random.seed
+
+# get current time
+# def get_time():
+#     return time.gmtime()
 
 # get the hash value of a given string
 def hash_string(s):
