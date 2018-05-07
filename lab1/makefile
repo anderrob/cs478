@@ -1,5 +1,5 @@
 CC:=gcc
-CFLAGS:= -Wall -pthread
+CFLAGS:= -w -pthread
 
 all:	server client
 

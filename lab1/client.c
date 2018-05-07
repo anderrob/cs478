@@ -7,19 +7,52 @@
 #define PORT 8080
 //using namespace std;
 
-long BUFFER_SIZE = 3000;
+long BUFFER_SIZE = 4096;
+int sock = 0, valread;
+char buffer[4096] = {0};
+struct sockaddr_in address,serv_addr;
   
-//int send_message(int sock, string message_input);
-  
+void start_networking();
+char* receive_message();
+void send_message(char* message);
   
 int main(int argc, char const *argv[])
 {
-    struct sockaddr_in address;
-    int sock = 0, valread;
-    struct sockaddr_in serv_addr;
-    char *hello = "Hello from client";
-    char buffer[1024] = {0};
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    start_networking();
+    char *message[BUFFER_SIZE];
+    strcpy(message, "Hello from client\n");
+    
+
+    send_message(message);
+    printf("Hello message sent\n");
+    printf("%s\n", receive_message());
+
+    
+    
+    
+    
+    return 0;
+}
+
+/* To send a message:
+ * just overwrite char* message (currently is of size 4096)
+ * and use send_message(message)
+ */
+void send_message(char* message){
+    send(sock, message , strlen(message) , 0 );
+}
+/* To receive a message:
+ * just make whatever you want equal to receive_message()
+ * or use printf("%s\n", receive_message()); 
+ * to immediately print the received message to the console
+ */
+char* receive_message(){
+    read( sock , buffer, BUFFER_SIZE);
+    return buffer;
+}
+
+void start_networking(){
+   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Socket creation error \n");
         return -1;
@@ -42,24 +75,6 @@ int main(int argc, char const *argv[])
         printf("\nConnection Failed \n");
         return -1;
     }
-    
-    
-    
-    
-    send(sock , hello , strlen(hello) , 0 );
-    printf("Hello message sent\n");
-    valread = read( sock , buffer, BUFFER_SIZE);
-    printf("%s\n",buffer );
-    
-    
-    
-    
-    return 0;
+
+
 }
-
-
-// int send_message(int sock, string message_input){
-
-//     return 0;
-
-// }
