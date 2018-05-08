@@ -1,5 +1,5 @@
 CC:=gcc
-CFLAGS:= -w -pthread
+CFLAGS:= -w -pthread -lcrypto
 
 all:	server client
 
