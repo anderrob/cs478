@@ -17,8 +17,9 @@ struct sockaddr_in address;
 int opt = 1;
 int addrlen = sizeof(address);
 char buffer[4096] = {0};
+unsigned char temp[SHA_DIGEST_LENGTH];
 char* random_string[4096];
-char puzzle[4096] = {0};
+char hash[SHA_DIGEST_LENGTH*2] = {0};
 char pre_image[4096] = {0};
 void start_networking();
 char* receive_message();
@@ -50,6 +51,12 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
+void print_hash() {
+  for (int i=0; i<SHA_DIGEST_LENGTH; i++){
+    printf("%02x ", hash[i]);
+  }
+}
+
 int random_number(){
   return rand() % 9000 + 1000;
 }
@@ -62,9 +69,10 @@ void number_to_string(int num) {
 
 void hash_string() {
   size_t length = strlen(random_string);
-  unsigned char hash[SHA_DIGEST_LENGTH];
-  SHA1(random_string, length, hash);
-  strcpy(puzzle, hash);
+  SHA1((unsigned char*)random_string, strlen(random_string), temp);
+  for(int i=0; i<SHA_DIGEST_LENGTH; i++){
+    sprintf((char*)&(hash[i*2]), "%02x", temp[i]);
+  }
 }
 
 char* remove_bits(int k){
@@ -78,7 +86,6 @@ char* generate_puzzle(){
   int num = random_number();
   number_to_string(num);
   hash_string();
-  printf("%s\n", puzzle);
 }
 
 
