@@ -44,8 +44,10 @@ int main(int argc, char const *argv[])
 
 
     printf("%s\n", receive_message());
-    send_message(message);
+    // send_message(message);
+    send_message(hash);
     printf("%s\n", "message sent");
+    printf("RECEIVED: %s\n", receive_message());
 
 
 
@@ -108,11 +110,9 @@ char* generate_puzzle(){
   number_to_string(num);
   hash_string(random_string);
   strcpy(hash2, hash);
-  printf("HASH %s\n", hash2);
   binary = stringToBinary(hash2);
   removed = remove_bits(8, binary);
   hash_string(removed);
-  printf("HASHA %s\n", hash);
   //send removed and hash so client can find collision
 }
 
@@ -130,6 +130,7 @@ void send_message(char* message){
  * to immediately print the received message to the console
  */
 char* receive_message(){
+    memset(&buffer[0], '\0', sizeof(buffer));
     read( sock , buffer, BUFFER_SIZE);
     return buffer;
 }
