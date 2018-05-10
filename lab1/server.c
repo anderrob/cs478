@@ -28,6 +28,9 @@ char* generate_puzzle();
 int random_number();
 void number_to_string();
 void hash_string();
+char* stringToBinary(char* s);
+char* binary;
+char* removed;
 
 
 
@@ -75,8 +78,28 @@ void hash_string() {
   }
 }
 
-char* remove_bits(int k){
+char* stringToBinary(char* s) {
+  if(s == NULL) return 0;
+    size_t len = strlen(s);
+    char *binary = malloc(len*8 + 1);
+    binary[0] = '\0';
+    for(size_t i = 0; i < len; ++i) {
+        char ch = s[i];
+        for(int j = 7; j >= 0; --j){
+            if(ch & (1 << j)) {
+                strcat(binary,"1");
+            } else {
+                strcat(binary,"0");
+            }
+        }
+    }
+    return binary;
+}
 
+char* remove_bits(int k, char* s){
+  char* temp = s;
+  temp[strlen(s)-k] = 0;
+  return temp;
 }
 
 
@@ -86,6 +109,8 @@ char* generate_puzzle(){
   int num = random_number();
   number_to_string(num);
   hash_string();
+  binary = stringToBinary(hash);
+  removed = remove_bits(8, binary);
 }
 
 
