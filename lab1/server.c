@@ -17,9 +17,10 @@ struct sockaddr_in address;
 int opt = 1;
 int addrlen = sizeof(address);
 char buffer[4096] = {0};
-unsigned char temp[SHA_DIGEST_LENGTH];
 char* random_string[4096];
 char hash[SHA_DIGEST_LENGTH*2] = {0};
+char hash2[SHA_DIGEST_LENGTH*2] = {0};
+char* test;
 char pre_image[4096] = {0};
 void start_networking();
 char* receive_message();
@@ -27,13 +28,10 @@ void send_message(char* message);
 char* generate_puzzle();
 int random_number();
 void number_to_string();
-void hash_string();
+void hash_string(char*);
 char* stringToBinary(char* s);
 char* binary;
 char* removed;
-
-
-
 
 int main(int argc, char const *argv[])
 {
@@ -70,9 +68,9 @@ void number_to_string(int num) {
   strcpy(random_string, temp);
 }
 
-void hash_string() {
-  size_t length = strlen(random_string);
-  SHA1((unsigned char*)random_string, strlen(random_string), temp);
+void hash_string(char* s) {
+  unsigned char temp[SHA_DIGEST_LENGTH];
+  SHA1((unsigned char*)s, strlen(s), temp);
   for(int i=0; i<SHA_DIGEST_LENGTH; i++){
     sprintf((char*)&(hash[i*2]), "%02x", temp[i]);
   }
@@ -108,9 +106,14 @@ char* generate_puzzle(){
   char message[12];
   int num = random_number();
   number_to_string(num);
-  hash_string();
-  binary = stringToBinary(hash);
+  hash_string(random_string);
+  strcpy(hash2, hash);
+  printf("HASH %s\n", hash2);
+  binary = stringToBinary(hash2);
   removed = remove_bits(8, binary);
+  hash_string(removed);
+  printf("HASHA %s\n", hash);
+  //send removed and hash so client can find collision
 }
 
 
