@@ -3,13 +3,18 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <openssl/sha.h>
 //#include <string>
 #define PORT 8080
 //using namespace std;
 
 long BUFFER_SIZE = 4096;
 int sock = 0, valread;
-char buffer[4096] = {0};
+// char buffer[4096] = {0};
+// char* buffer = malloc(sizeof(char)*4096);
+char* pre_image[SHA_DIGEST_LENGTH*2] = {0};
+char* hash[SHA_DIGEST_LENGTH*2] = {0};
+char* removed;
 struct sockaddr_in address,serv_addr;
 
 void start_networking();
@@ -25,9 +30,12 @@ int main(int argc, char const *argv[])
 
     send_message(message);
     printf("Hello message sent\n");
-    printf("%s\n", receive_message());
-    send_message("Second message\n");
+    strcpy(hash, receive_message());
+    printf("%s\n", hash);
 
+    send_message("Got the hash value\n");
+    strcpy(pre_image, receive_message());
+    printf("RECEIVED: %s\n", pre_image);
 
 
 
@@ -48,6 +56,7 @@ void send_message(char* message){
  * to immediately print the received message to the console
  */
 char* receive_message(){
+    char* buffer = malloc(sizeof(char)*4096);
     memset(&buffer[0], '\0', sizeof(buffer));
     read( sock , buffer, BUFFER_SIZE);
     return buffer;

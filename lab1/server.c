@@ -48,6 +48,7 @@ int main(int argc, char const *argv[])
     send_message(hash);
     printf("%s\n", "message sent");
     printf("RECEIVED: %s\n", receive_message());
+    send_message(removed);
 
 
 
