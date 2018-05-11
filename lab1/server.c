@@ -35,23 +35,21 @@ char* removed;
 
 int main(int argc, char const *argv[])
 {
-    srand(time(NULL));
     generate_puzzle();
+    printf("BINARY %s\n", binary);
     start_networking();
     char message[BUFFER_SIZE];
     strcpy(message, "hey there from server\n");
 
-
-
     printf("%s\n", receive_message());
-    // send_message(message);
     send_message(hash);
     printf("%s\n", "message sent");
     printf("RECEIVED: %s\n", receive_message());
-    send_message(removed);
+    send_message(hash);
     while(1){
-      printf("RECEIVED: %s\n", receive_message());
-      send_message("hi");
+      receive_message();
+      printf("Recieved Request from client\n");
+      send_message("Received your request\n");
     }
 
 
@@ -106,8 +104,6 @@ char* remove_bits(int k, char* s){
   return temp;
 }
 
-
-
 char* generate_puzzle(){
   char message[12];
   int num = random_number();
@@ -117,7 +113,6 @@ char* generate_puzzle(){
   binary = stringToBinary(hash2);
   removed = remove_bits(8, binary);
   hash_string(removed);
-  //send removed and hash so client can find collision
 }
 
 

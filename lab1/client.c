@@ -39,18 +39,17 @@ int main(int argc, char const *argv[])
 
     send_message("Got the hash value\n");
     strcpy(pre_image, receive_message());
+    printf("PRE %s\n", pre_image);
     while(1){
       for(int i=0; i<256; i++){
-        // sleep(1);
         memset(&result[0], '\0', sizeof(result));
         strncpy(result, pre_image, sizeof(pre_image));
         strcat(result, itob(i));
         hash_string(result);
         if(check_hashes() == 1){
-          printf("REQUEST SENT\n");
+          printf("Request Sent\n");
+          send_message(itob(i));
         }
-        send_message(itob(i));
-        receive_message();
       }
       receive_message();
     }
@@ -59,12 +58,11 @@ int main(int argc, char const *argv[])
 }
 
 int check_hashes(){
-  for(int i=0; i<strlen(hash); i++){
-    if(hash[i] != hash2[i]){
-      return 0;
-    }
+  if(strcmp(hash, hash2) != 0){
+    return 1;
+  } else {
+    return 0;
   }
-  return 1;
 }
 
 void hash_string(char* s) {
