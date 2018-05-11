@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <unistd.h>
 #include <openssl/sha.h>
 //#include <string>
 #define PORT 8080
@@ -10,19 +11,23 @@
 
 long BUFFER_SIZE = 4096;
 int sock = 0, valread;
-// char buffer[4096] = {0};
-// char* buffer = malloc(sizeof(char)*4096);
 char* pre_image[SHA_DIGEST_LENGTH*2] = {0};
-char* hash[SHA_DIGEST_LENGTH*2] = {0};
+char* result[SHA_DIGEST_LENGTH*3] = {0};
+char hash[SHA_DIGEST_LENGTH*2] = {0};
+char hash2[SHA_DIGEST_LENGTH*2] = {0};
 char* removed;
 struct sockaddr_in address,serv_addr;
+char guess[8];
 
 void start_networking();
 char* receive_message();
 void send_message(char* message);
+char* itob(int i);
+void hash_string(char*);
 
 int main(int argc, char const *argv[])
 {
+    set_guess();
     start_networking();
     char *message[BUFFER_SIZE];
     strcpy(message, "Hello from client\n");
@@ -31,17 +36,61 @@ int main(int argc, char const *argv[])
     send_message(message);
     printf("Hello message sent\n");
     strcpy(hash, receive_message());
-    printf("%s\n", hash);
 
     send_message("Got the hash value\n");
     strcpy(pre_image, receive_message());
-    printf("RECEIVED: %s\n", pre_image);
-
-
-
+    while(1){
+      for(int i=0; i<256; i++){
+        // sleep(1);
+        memset(&result[0], '\0', sizeof(result));
+        strncpy(result, pre_image, sizeof(pre_image));
+        strcat(result, itob(i));
+        hash_string(result);
+        if(check_hashes() == 1){
+          printf("REQUEST SENT\n");
+        }
+        send_message(itob(i));
+        receive_message();
+      }
+      receive_message();
+    }
 
     return 0;
 }
+
+int check_hashes(){
+  for(int i=0; i<strlen(hash); i++){
+    if(hash[i] != hash2[i]){
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void hash_string(char* s) {
+  unsigned char temp[SHA_DIGEST_LENGTH];
+  SHA1((unsigned char*)s, strlen(s), temp);
+  for(int i=0; i<SHA_DIGEST_LENGTH; i++){
+    sprintf((char*)&(hash2[i*2]), "%02x", temp[i]);
+  }
+}
+
+void set_guess() {
+  for(int i=0; i<8; i++){
+    guess[i] = '0';
+  }
+}
+
+char* itob(int i) {
+   static char bits[8] = {'0','0','0','0','0','0','0','0'};
+   int bits_index = 7;
+   while ( i > 0 ) {
+      bits[bits_index--] = (i & 1) + '0';
+      i = ( i >> 1);
+   }
+   return bits;
+}
+
 
 /* To send a message:
  * just overwrite char* message (currently is of size 4096)

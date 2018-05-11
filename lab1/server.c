@@ -49,7 +49,10 @@ int main(int argc, char const *argv[])
     printf("%s\n", "message sent");
     printf("RECEIVED: %s\n", receive_message());
     send_message(removed);
-
+    while(1){
+      printf("RECEIVED: %s\n", receive_message());
+      send_message("hi");
+    }
 
 
     return 0;
