@@ -35,6 +35,9 @@ char* removed;
 
 int main(int argc, char const *argv[])
 {
+    srand(time(NULL));
+    hash_string("hello world\0");
+    printf("HASH: %s\n", hash);
     generate_puzzle();
     printf("BINARY %s\n", binary);
     start_networking();
@@ -45,7 +48,7 @@ int main(int argc, char const *argv[])
     send_message(hash);
     printf("%s\n", "message sent");
     printf("RECEIVED: %s\n", receive_message());
-    send_message(hash);
+    send_message(removed);
     while(1){
       receive_message();
       printf("Recieved Request from client\n");
@@ -73,7 +76,8 @@ void number_to_string(int num) {
 }
 
 void hash_string(char* s) {
-  unsigned char temp[SHA_DIGEST_LENGTH];
+  memset(&hash[0], '\0', sizeof(hash));
+  unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
   SHA1((unsigned char*)s, strlen(s), temp);
   for(int i=0; i<SHA_DIGEST_LENGTH; i++){
     sprintf((char*)&(hash[i*2]), "%02x", temp[i]);
@@ -111,8 +115,8 @@ char* generate_puzzle(){
   hash_string(random_string);
   strcpy(hash2, hash);
   binary = stringToBinary(hash2);
+  hash_string(binary);
   removed = remove_bits(8, binary);
-  hash_string(removed);
 }
 
 

@@ -28,10 +28,11 @@ void hash_string(char*);
 int main(int argc, char const *argv[])
 {
     set_guess();
+    hash_string("hello world\0");
+    printf("hash: %s\n", hash2);
     start_networking();
     char *message[BUFFER_SIZE];
     strcpy(message, "Hello from client\n");
-
 
     send_message(message);
     printf("Hello message sent\n");
@@ -58,7 +59,7 @@ int main(int argc, char const *argv[])
 }
 
 int check_hashes(){
-  if(strcmp(hash, hash2) != 0){
+  if(strcmp(hash, hash2) == 0){
     return 1;
   } else {
     return 0;
