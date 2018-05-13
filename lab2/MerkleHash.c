@@ -76,14 +76,10 @@ int main(){
     hash_tree(root);
     print2D(root);
     
-    
-    /////// STACK IS CURRENTLY OUT OF SCOPE WHEN BEING PUSHED TO... MAKE IT GLOBAL? ///////
-
-
 
     printf("leaf is %d\nAuthentication hashes are:\n", root->right->left->hash);
     authentication_values(root, root->right->left, &stack);
-
+    printf("Hashes needed to verify leaf %d are:\n", root->right->left->data);
     pop_stack(stack);
  
     return 0;
@@ -96,11 +92,11 @@ void authentication_values(node* root, node *leaf, struct stack*** stack_head){
         return;
     }
     if(leaf->parent->left->hash == leaf->hash){
-        printf("\t\t%d\n",leaf->parent->right->hash);
+        //printf("\t\t%d\n",leaf->parent->right->hash);
         push(&*stack_head, leaf->parent->right->hash);
     }
     else if (leaf->parent->right->hash == leaf->hash){
-        printf("\t\t%d\n",leaf->parent->left->hash);
+        //printf("\t\t%d\n",leaf->parent->left->hash);
         push(&*stack_head, leaf->parent->left->hash);
     }
     authentication_values(root, leaf->parent, stack_head);
@@ -169,7 +165,7 @@ int hash(int data){
 void pop_stack(struct stack** stack_head){
     
     while (peek(stack_head) > 0){
-        printf("popped: %d\n", pop(&stack_head));
+        printf("\t\t%d\n", pop(&stack_head));
     }
     
 }
@@ -223,7 +219,7 @@ void push(struct stack** stack_head, int data)
     struct stack* stack_node = newNode(data);
     stack_node->next = *stack_head;
     *stack_head = stack_node;
-    printf("%d pushed to stack\n", data);
+    printf("\t\t%d\n", data);
 }
  
 int pop(struct stack** stack_head)
