@@ -1,110 +1,3 @@
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-
-
-// #define TREE_HEIGHT 4
-// #define BLOCK_SIZE 5
-// #define DATA_BLOCKS 8 
-
-
-// typedef struct { 
-//     char *hash;
-//     char *data;
-//     struct node *parent;
-//     struct node *left;
-//     struct node *right;
-// } node;
-
-// typedef struct {
-//     long n;
-//     long tree_height;
-//     long data_block_size;
-//     long data_blocks;
-//     //long hash;
-
-//     node *nodes;
-// } merkle_tree;
-
-
-
-// int build_tree(merkle_tree *tree, char **data);
-// void print_tree(merkle_tree *tree);
-
-
-
-// int main(){
-//     node *one = {"hash", "data", NULL, NULL, NULL };
-//     node *two = {"hash", "data", &one, NULL, NULL};
-//     one->left = two;
-
-
-//     int i;
-//     char *data[DATA_BLOCKS];
-//     char *data_copy[DATA_BLOCKS];
-//     char buffer[BLOCK_SIZE];
-//     merkle_tree tree = {0, TREE_HEIGHT, BLOCK_SIZE, DATA_BLOCKS, NULL};
-
-//     for (i=0; i<BLOCK_SIZE; i++){
-//         buffer[i] = "A";
-//     }
-
-
-//     for (i=0; i<DATA_BLOCKS; i++) {
-//         data[i] = (char *)malloc(sizeof(char) * BLOCK_SIZE);
-//         data_copy[i] = (char *)malloc(sizeof(char) * BLOCK_SIZE);
-//         memcpy(data[i], buffer, BLOCK_SIZE);
-//         memcpy(data_copy[i], buffer, BLOCK_SIZE);
-//     }
-
-//     build_tree(&tree, data);
-//     print_tree(&tree);
-
-//     return 0;
-// }
-
-
-// int build_tree(merkle_tree *tree, char **data) {
-
-//     if (tree->data_blocks > (1 << (tree->tree_height - 1))){
-//         return -1;
-//     }
-//     int i, leaf_start;
-//     leaf_start = (1 << (tree->tree_height - 1));
-//     tree->n = leaf_start + tree->data_blocks - 1;
-//     tree->nodes = (node *)malloc(sizeof(node) * (tree->n + 1));
-//     for (i = leaf_start; i <= tree->n; i++) {
-//         tree->nodes[i].data = data[i-leaf_start];
-//         tree->nodes[i].hash = NULL;
-        
-//     }
-//     for (i = leaf_start - 1; i > 0; i--) {
-//         tree->nodes[i].hash = NULL;
-       
-//     }
-//     return 0;
-// }
-
-
-
-// void print_tree(merkle_tree *tree) {
-
-//     for(int i=1; i <= tree->n; i++){
-        
-//         // if (! tree->nodes ) {
-//         //     printf("<empty hash>\n");
-//         //     break;
-//         // }
-//         for(int j = 0; j < BLOCK_SIZE; j++){
-//             printf("%02x\t", tree->nodes[j]);
-//             if ((j%5) == 0){
-//                 printf("\n");
-//             }
-//         }
-//         printf("\n");
-//     }
-//     return;
-// }
 
 
 #include <stdio.h>
@@ -143,7 +36,7 @@ void print2DUtil(node *root, int space);
 void print2D(node *root);
 int hash(int data);
 int get_root_hash(node *root);
-void authentication_values(node*root, node *leaf, struct stack** stack_head);
+void authentication_values(node*root, node *leaf, struct stack*** stack_head);
 void pop_stack(struct stack** stack_head);
 struct stack* newNode(int data);
 int siblings_hash[2];
@@ -189,27 +82,26 @@ int main(){
 
 
     printf("leaf is %d\nAuthentication hashes are:\n", root->right->left->hash);
-    authentication_values(root, root->right->left, stack);
-    push(&stack, 10);
-    printf("popped: %d\n", pop(&stack));
+    authentication_values(root, root->right->left, &stack);
+
     pop_stack(stack);
  
     return 0;
 }
 
 
-void authentication_values(node* root, node *leaf, struct stack** stack_head){
+void authentication_values(node* root, node *leaf, struct stack*** stack_head){
 
     if(leaf->hash == root->hash){
         return;
     }
     if(leaf->parent->left->hash == leaf->hash){
         printf("\t\t%d\n",leaf->parent->right->hash);
-        push(&stack_head, leaf->parent->right->hash);
+        push(&*stack_head, leaf->parent->right->hash);
     }
     else if (leaf->parent->right->hash == leaf->hash){
         printf("\t\t%d\n",leaf->parent->left->hash);
-        push(&stack_head, leaf->parent->left->hash);
+        push(&*stack_head, leaf->parent->left->hash);
     }
     authentication_values(root, leaf->parent, stack_head);
 
@@ -276,7 +168,9 @@ int hash(int data){
 
 void pop_stack(struct stack** stack_head){
     
+    while (peek(stack_head) > 0){
         printf("popped: %d\n", pop(&stack_head));
+    }
     
 }
 
@@ -297,8 +191,9 @@ void print2DUtil(node *root, int space)
     // Print current node after space
     // count
     printf("\n");
-    for (int i = COUNT; i < space; i++)
+    for (int i = COUNT; i < space; i++){
         printf(" ");
+    }   
     printf("%d\n", root->hash);
  
     // Process left child
