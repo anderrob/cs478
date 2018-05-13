@@ -110,7 +110,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define COUNT 10
+#define TREE_HEIGHT 3;
 
 typedef struct node 
 {
@@ -122,13 +124,31 @@ typedef struct node
     struct node *parent;
 }node;
 
+struct stack
+{
+    int data;
+    struct stack* next;
+};
+ 
+
+ 
+
 
 struct node* new_node(int data);
+int isEmpty(struct stack *stack_head);
+void push(struct stack** stack_head, int data);
+int pop(struct stack** stack_head);
+int peek(struct stack* stack_head);
 void print2DUtil(node *root, int space);
 void print2D(node *root);
 int hash(int data);
 int get_root_hash(node *root);
-int* authentication_values(node*root, node *leaf);
+void authentication_values(node*root, node *leaf, struct stack** stack_head);
+void pop_stack(struct stack** stack_head);
+struct stack* newNode(int data);
+int siblings_hash[2];
+
+
 
 
 
@@ -139,6 +159,7 @@ int main(){
     root->left->parent = root;
     root->right  = new_node(3);
     root->right->parent = root;
+    struct stack* stack = NULL;
 
 
     root->left->left  = new_node(4);
@@ -161,18 +182,36 @@ int main(){
     // root->right->right->right  = new_node(15); 
     hash_tree(root);
     print2D(root);
+    
+    
+    /////// STACK IS CURRENTLY OUT OF SCOPE WHEN BEING PUSHED TO... MAKE IT GLOBAL? ///////
+
+
+
+    printf("leaf is %d\nAuthentication hashes are:\n", root->right->left->hash);
+    authentication_values(root, root->right->left, stack);
+    push(&stack, 10);
+    printf("popped: %d\n", pop(&stack));
+    pop_stack(stack);
  
     return 0;
-
-getchar();
-return 0;
 }
 
 
-int* authentication_values(node*root, node *leaf){
+void authentication_values(node* root, node *leaf, struct stack** stack_head){
 
-
-
+    if(leaf->hash == root->hash){
+        return;
+    }
+    if(leaf->parent->left->hash == leaf->hash){
+        printf("\t\t%d\n",leaf->parent->right->hash);
+        push(&stack_head, leaf->parent->right->hash);
+    }
+    else if (leaf->parent->right->hash == leaf->hash){
+        printf("\t\t%d\n",leaf->parent->left->hash);
+        push(&stack_head, leaf->parent->left->hash);
+    }
+    authentication_values(root, leaf->parent, stack_head);
 
 }
 
@@ -225,7 +264,6 @@ void hash_tree(node *root)
         hash_tree(root->right);
         hash_tree(root->left);
         root->hash = hash(root->left->hash + root->right->hash);
-        
     }
     
 }
@@ -233,6 +271,13 @@ void hash_tree(node *root)
 
 int hash(int data){
     return data + 10;
+}
+
+
+void pop_stack(struct stack** stack_head){
+    
+        printf("popped: %d\n", pop(&stack_head));
+    
 }
 
 
@@ -265,4 +310,51 @@ void print2D(node *root)
 {
    // Pass initial space count as 0
    print2DUtil(root, 0);
+}
+
+
+
+
+
+// Source: https://www.geeksforgeeks.org/stack-data-structure-introduction-program/
+
+int isEmpty(struct stack *stack_head)
+{
+    return !stack_head;
+}
+ 
+void push(struct stack** stack_head, int data)
+{
+    struct stack* stack_node = newNode(data);
+    stack_node->next = *stack_head;
+    *stack_head = stack_node;
+    printf("%d pushed to stack\n", data);
+}
+ 
+int pop(struct stack** stack_head)
+{
+    if (isEmpty(*stack_head))
+        return -1;
+    struct stack* temp = *stack_head;
+    *stack_head = (*stack_head)->next;
+    int popped = temp->data;
+    free(temp);
+ 
+    return popped;
+}
+ 
+int peek(struct stack* stack_head)
+{
+    if (isEmpty(stack_head))
+        return -1;
+    return stack_head->data;
+}
+
+struct stack* newNode(int data)
+{
+    struct stack* stack_node =
+              (struct stack*) malloc(sizeof(struct stack));
+    stack_node->data = data;
+    stack_node->next = NULL;
+    return stack_node;
 }
