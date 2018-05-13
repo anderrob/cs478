@@ -18,10 +18,9 @@ void init_t_array(int*, int t);
 char** public_key = NULL;
 char** secret_key = NULL;
 char** split = NULL;
+char hash[SHA_DIGEST_LENGTH*2] = {0};
 int* hashes = NULL;
 int count = 0;
-
-char hash[SHA_DIGEST_LENGTH*2] = {0};
 
 int main() {
   int l = 4;
@@ -35,10 +34,9 @@ int main() {
   init_t_array(t_array, t);
   int choose = t_choose_k();
   S(m, k, t, subset);
-  for(int i=0; i<k; i++){
-    printf("SUBSET: %d\n", subset[i]);
-  }
-  // key_gen(t, k, l);
+  key_gen(t, k, l);
+  printf("PUBLIC: %s\n", public_key[0]);
+  printf("SECRET: %d\n", secret_key[0]);
   // sign(k);
   return 0;
 }
@@ -63,6 +61,7 @@ void S(int m, int k, int t, int subset[]){
     S(m, k-1, t-1, subset);
   } else {
     S(m-pre_compute, k, t-1, subset);
+
   }
 }
 
@@ -91,11 +90,14 @@ char* random_string(int length){
 }
 
 void key_gen(int t, int k, int l){
-  public_key = malloc(sizeof(char*)*(t+2));
-  secret_key = malloc(sizeof(char*)*(t+2));
-  secret_key[0] = k;
-  for(int i=1; i<t+1; i++){
+  public_key = malloc(sizeof(char*)*(t));
+  secret_key = malloc(sizeof(char*)*(t));
+  for(int i=0; i<t; i++){
     secret_key[i] = random_string(l);
+    hash_string(secret_key[i]);
+    public_key[i] = malloc(sizeof(char)*SHA_DIGEST_LENGTH*2);
+    strcpy(public_key[i], hash);
+    memset(&hash, '\0', sizeof(hash));
   }
 }
 
