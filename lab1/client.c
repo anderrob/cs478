@@ -27,32 +27,41 @@ void hash_string(char*);
 
 int main(int argc, char const *argv[])
 {
-    set_guess();
-    hash_string("hello world\0");
-    printf("hash: %s\n", hash2);
     start_networking();
     char *message[BUFFER_SIZE];
     strcpy(message, "Hello from client\n");
 
     send_message(message);
     printf("Hello message sent\n");
-    strcpy(hash, receive_message());
 
-    send_message("Got the hash value\n");
-    strcpy(pre_image, receive_message());
-    printf("PRE %s\n", pre_image);
     while(1){
-      for(int i=0; i<256; i++){
+      memset(&hash[0], '\0', sizeof(hash));
+      memset(&hash2[0], '\0', sizeof(hash2));
+      memset(&result[0], '\0', sizeof(result));
+      strcpy(hash, receive_message());
+      if(strcmp(hash, "1") == 0){
+        break;
+      }
+      send_message("Got the hash value\n");
+      strcpy(pre_image, receive_message());
+
+      for(int i=0; i<65536; i++){
         memset(&result[0], '\0', sizeof(result));
         strncpy(result, pre_image, sizeof(pre_image));
         strcat(result, itob(i));
         hash_string(result);
         if(check_hashes() == 1){
-          printf("Request Sent\n");
           send_message(itob(i));
+          receive_message();
+          send_message("Thank you");
+          break;
+        } else if(i == 65535){
+          printf("Can't solve the puzzle\n\n");
+          send_message("can't solve");
+          receive_message();
+          send_message("Thank you");
         }
       }
-      receive_message();
     }
 
     return 0;
@@ -67,22 +76,19 @@ int check_hashes(){
 }
 
 void hash_string(char* s) {
-  unsigned char temp[SHA_DIGEST_LENGTH];
+  unsigned char temp[SHA_DIGEST_LENGTH] = {'\0'};
   SHA1((unsigned char*)s, strlen(s), temp);
   for(int i=0; i<SHA_DIGEST_LENGTH; i++){
     sprintf((char*)&(hash2[i*2]), "%02x", temp[i]);
   }
 }
 
-void set_guess() {
-  for(int i=0; i<8; i++){
-    guess[i] = '0';
-  }
-}
-
 char* itob(int i) {
-   static char bits[8] = {'0','0','0','0','0','0','0','0'};
-   int bits_index = 7;
+   static char bits[16] = {'0'};
+   for(int i=0; i<16; i++){
+     bits[i] = '0';
+   }
+   int bits_index = 15;
    while ( i > 0 ) {
       bits[bits_index--] = (i & 1) + '0';
       i = ( i >> 1);

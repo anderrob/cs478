@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <time.h>
+#include <sys/time.h>
 #include "openssl/sha.h"
 #define PORT 8080
 
@@ -35,27 +36,35 @@ char* removed;
 
 int main(int argc, char const *argv[])
 {
+    struct timeval t1, t2;
+    double elapsedTime;
     srand(time(NULL));
-    hash_string("hello world\0");
-    printf("HASH: %s\n", hash);
-    generate_puzzle();
-    printf("BINARY %s\n", binary);
+    int count = 0;
     start_networking();
     char message[BUFFER_SIZE];
     strcpy(message, "hey there from server\n");
 
     printf("%s\n", receive_message());
-    send_message(hash);
-    printf("%s\n", "message sent");
-    printf("RECEIVED: %s\n", receive_message());
-    send_message(removed);
-    while(1){
+    gettimeofday(&t1, NULL);
+    while( count < 1000){
+      memset(hash, '\0', sizeof(hash));
+      memset(hash2, '\0', sizeof(hash2));
+      memset(pre_image, '\0', sizeof(pre_image));
+      generate_puzzle();
+      send_message(hash);
       receive_message();
-      printf("Recieved Request from client\n");
+      send_message(removed);
+      receive_message();
       send_message("Received your request\n");
+      receive_message();
+      count++;
     }
-
-
+    gettimeofday(&t2, NULL);
+    elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;
+    elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
+    elapsedTime = elapsedTime/1000;
+    printf("TIME ELAPSED: %f\n", elapsedTime);
+    send_message("1");
     return 0;
 }
 
@@ -116,7 +125,7 @@ char* generate_puzzle(){
   strcpy(hash2, hash);
   binary = stringToBinary(hash2);
   hash_string(binary);
-  removed = remove_bits(8, binary);
+  removed = remove_bits(16, binary);
 }
 
 
