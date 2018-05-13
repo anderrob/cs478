@@ -4,15 +4,17 @@
 #include <time.h>
 #include <openssl/sha.h>
 
-void key_gen(int l, int k, int t);
+void key_gen(int l, char* k, int t);
 void sign(char* m, char** secret_key);
 void verify();
 char* random_string(int length);
 char** public_key = NULL;
 char** secret_key = NULL;
+char* k = NULL;
 
 int main() {
-  key_gen(4, 4, 2);
+  k = random_string(4);
+  key_gen(4, k, 2);
   for(int i=0; i<2; i++){
     printf("KEY: %s\n", secret_key[i]);
   }
@@ -24,7 +26,6 @@ char* random_string(int length){
   char* random_string = NULL;
 
   if(length){
-    printf("allocating memory\n");
     random_string = malloc(sizeof(char)*(length+1));
 
     if(random_string) {
@@ -35,14 +36,14 @@ char* random_string(int length){
       random_string[length] = '\0';
     }
   }
-  printf("RANDOM: %s\n", random_string);
   return random_string;
 }
 
-void key_gen(int l, int k, int t){
-  public_key = malloc(sizeof(char*)*(t+1));
-  secret_key = malloc(sizeof(char*)*(t+1));
-  for(int i=0; i<t; i++){
+void key_gen(int l, char* k, int t){
+  public_key = malloc(sizeof(char*)*(t+2));
+  secret_key = malloc(sizeof(char*)*(t+2));
+  secret_key[0] = k;
+  for(int i=1; i<t+1; i++){
     secret_key[i] = random_string(l);
   }
 }
