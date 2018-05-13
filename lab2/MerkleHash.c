@@ -142,13 +142,13 @@ int main(){
 
 
     root->left->left  = new_node(4);
-    root->left->left->parent = root;
+    root->left->left->parent = root->left;
     root->left->right = new_node(5);
-    root->left->right->parent = root;
+    root->left->right->parent = root->left;
     root->right->left  = new_node(6);
-    root->right->left->parent = root;
+    root->right->left->parent = root->right;
     root->right->right = new_node(7);
-    root->right->right->parent = root;
+    root->right->right->parent = root->right;
 
 
     // root->left->left->left  = new_node(8);
