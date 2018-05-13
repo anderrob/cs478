@@ -1,5 +1,5 @@
 CC:=gcc
-CFLAGS:= -w -pthread -lcrypto
+CFLAGS:= -w -g -pthread -lcrypto
 
 all:	merkle hors
 
