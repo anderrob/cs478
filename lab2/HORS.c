@@ -22,9 +22,6 @@ char hash[SHA_DIGEST_LENGTH*2] = {0};
 int main() {
   k = random_string(4);
   key_gen(4, k, 2);
-  for(int i=0; i<2; i++){
-    printf("KEY: %s\n", secret_key[i]);
-  }
   sign(k);
   return 0;
 }
@@ -56,24 +53,28 @@ void key_gen(){
   }
 }
 
-void divide_string(char* s, int t) {
+void divide_string(char* s, int size) {
   int str_size = strlen(s);
   int i;
   int part_size;
   int count = 0;
+  int index = 0;
+  char* temp;
 
-  part_size = str_size / t;
+  part_size = str_size / size;
   split = malloc(sizeof(char*)*(str_size/part_size));
-  char* temp = malloc(sizeof(char)*(part_size+1));
-  memset(temp, '\0', sizeof(temp));
   for(int i=0; i<str_size+1; i++){
-    if(i % part_size == 0){
-      count = 0;
-      split[i] = temp;
-    } else{
-      temp[count] = s[i];
-      count++;
+    if(i == 0){
+      temp = malloc(sizeof(char)*(part_size+1));
     }
+    if(i % part_size == 0 && i != 0){
+      split[index] = temp;
+      index++;
+      count = 0;
+      temp = malloc(sizeof(char)*(part_size+1));
+    }
+    temp[count] = s[i];
+    count++;
   }
 }
 
@@ -95,12 +96,22 @@ char* string_to_binary(char* s){
     return binary;
 }
 
+int btoi(char* s){
+  return (int)strtol(s, NULL, 2);
+}
+
 void sign(char* m) {
+  int temp = 0;
   char* binary;
   double size = log2(t);
   hash_string(m);
   binary = string_to_binary(hash);
   divide_string(binary, (int)size);
+  for(int i=0; i<5; i++){
+    printf("SPLIT: %s\n", split[i]);
+    // temp = btoi(split[i]);
+    // printf("INT: %s\n", temp);
+  }
 }
 
 void hash_string(char* s){
