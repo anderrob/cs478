@@ -5,25 +5,71 @@
 #include <math.h>
 #include <openssl/sha.h>
 
-void key_gen();
-void sign(char* m);
+void key_gen(int t, int k, int l);
+void sign(char* m, int t);
 void verify();
 char* random_string(int length);
 void hash_string(char* s);
 char* string_to_binary(char* s);
+void fill_T();
+void S(int m, int k, int t, int subset[]);
+int t_choose_k();
+void init_t_array(int*, int t);
 char** public_key = NULL;
 char** secret_key = NULL;
 char** split = NULL;
-char* k = NULL;
-int t = 32;
-int l = 4;
+int* hashes = NULL;
+int count = 0;
+
 char hash[SHA_DIGEST_LENGTH*2] = {0};
 
 int main() {
-  k = random_string(4);
-  key_gen(4, k, 2);
-  sign(k);
+  int l = 4;
+  int t = 1024;
+  int k = 32;
+  int b = 15;
+  int m = 30;
+  int t_array[t];
+  int subset[k];
+  srand(time(NULL));
+  init_t_array(t_array, t);
+  int choose = t_choose_k();
+  S(m, k, t, subset);
+  for(int i=0; i<k; i++){
+    printf("SUBSET: %d\n", subset[i]);
+  }
+  // key_gen(t, k, l);
+  // sign(k);
   return 0;
+}
+
+int t_choose_k(int t, int k) {
+  int result = 1;
+  for(int i=1; i<=k; i++){
+    result *= t - (k-i);
+    result /= i;
+  }
+  return result;
+}
+
+void S(int m, int k, int t, int subset[]){
+  int pre_compute = t_choose_k(t-1, k-1);
+  if(k == 0){
+    return;
+  }
+  if(m < pre_compute){
+    subset[count] = t;
+    count++;
+    S(m, k-1, t-1, subset);
+  } else {
+    S(m-pre_compute, k, t-1, subset);
+  }
+}
+
+void init_t_array(int t_array[], int t) {
+  for(int i=1; i<=t; i++){
+    t_array[i-1] = i;
+  }
 }
 
 char* random_string(int length){
@@ -44,7 +90,7 @@ char* random_string(int length){
   return random_string;
 }
 
-void key_gen(){
+void key_gen(int t, int k, int l){
   public_key = malloc(sizeof(char*)*(t+2));
   secret_key = malloc(sizeof(char*)*(t+2));
   secret_key[0] = k;
@@ -97,20 +143,26 @@ char* string_to_binary(char* s){
 }
 
 int btoi(char* s){
-  return (int)strtol(s, NULL, 2);
+  register unsigned char *p = s;
+  register unsigned int r = 0;
+
+  while(p && *p){
+    r <<=1;
+    r += (unsigned int)((*p++)& 0x01);
+  }
+  return (int)r;
 }
 
-void sign(char* m) {
-  int temp = 0;
+void sign(char* m, int t) {
   char* binary;
   double size = log2(t);
   hash_string(m);
   binary = string_to_binary(hash);
   divide_string(binary, (int)size);
+  hashes = malloc(sizeof(int)*sizeof(split));
   for(int i=0; i<5; i++){
-    printf("SPLIT: %s\n", split[i]);
-    // temp = btoi(split[i]);
-    // printf("INT: %s\n", temp);
+    hashes[i] = btoi(split[i]);
+    printf("HASHES: %d\n", hashes[i]);
   }
 }
 
