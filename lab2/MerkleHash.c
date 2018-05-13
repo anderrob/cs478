@@ -116,9 +116,10 @@ typedef struct node
 {
 	int data;
     int hash;
+
 	struct node *left;
 	struct node *right;
-
+    struct node *parent;
 }node;
 
 
@@ -126,8 +127,8 @@ struct node* new_node(int data);
 void print2DUtil(node *root, int space);
 void print2D(node *root);
 int hash(int data);
-
-
+int get_root_hash(node *root);
+int* authentication_values(node*root, node *leaf);
 
 
 
@@ -135,12 +136,19 @@ int main(){
 /*create root*/
     node *root   = new_node(1);
     root->left   = new_node(2);
+    root->left->parent = root;
     root->right  = new_node(3);
- 
+    root->right->parent = root;
+
+
     root->left->left  = new_node(4);
+    root->left->left->parent = root;
     root->left->right = new_node(5);
+    root->left->right->parent = root;
     root->right->left  = new_node(6);
+    root->right->left->parent = root;
     root->right->right = new_node(7);
+    root->right->right->parent = root;
 
 
     // root->left->left->left  = new_node(8);
@@ -158,6 +166,21 @@ int main(){
 
 getchar();
 return 0;
+}
+
+
+int* authentication_values(node*root, node *leaf){
+
+
+
+
+}
+
+
+
+
+int get_root_hash(node *root){
+    return root->hash;
 }
 
 
@@ -185,16 +208,26 @@ void hash_tree(node *root)
     // Base case
     if (root == NULL)
         return;
-    if (root->right == NULL || root->left == NULL){
+    if (root->right == NULL && root->left == NULL){
         return;
-     }
-
-
-    // Process right child first
-    hash_tree(root->right);
-    // Process left child
-    hash_tree(root->left);
-    root->hash = hash(root->left->hash + root->right->hash);
+    }
+    if (root->right == NULL && root->left != NULL){
+        hash_tree(root->left);
+        root->hash = hash(root->left->hash);
+        return;
+    }
+    else if (root->left == NULL && root->right != NULL){
+        hash_tree(root->right);
+        root->hash = hash(root->right->hash);
+        return;
+    }
+    else{
+        hash_tree(root->right);
+        hash_tree(root->left);
+        root->hash = hash(root->left->hash + root->right->hash);
+        
+    }
+    
 }
 
 
