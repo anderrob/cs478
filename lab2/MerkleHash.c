@@ -5,7 +5,7 @@
 #include <string.h>
 #include <openssl/sha.h>
 #include <limits.h>
-#define COUNT 10
+#define COUNT 6
 #define TREE_HEIGHT 3;
 
 typedef struct node 
@@ -60,6 +60,7 @@ void authentication_values(node* root, node *leaf, struct stack* stack);
 
 int main(){
 /*create root*/
+    
     node *root   = new_node("root");
     root->left   = new_node("node 2");
     root->left->parent = root;
@@ -208,7 +209,7 @@ void print2DUtil(node *root, int space)
     for (int i = COUNT; i < space; i++){
         printf(" ");
     }   
-    printf("%s\n", root->hash);
+    printf("%s", root->hash);
  
     // Process left child
     print2DUtil(root->left, space);
@@ -219,6 +220,7 @@ void print2D(node *root)
 {
    // Pass initial space count as 0
    print2DUtil(root, 0);
+   printf ("\n\n");
 }
 
 
