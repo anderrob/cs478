@@ -3,14 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <openssl/sha.h>
 
 #define COUNT 10
 #define TREE_HEIGHT 3;
 
 typedef struct node 
 {
-	int data;
-    int hash;
+	char* data;
+    char* hash;
 
 	struct node *left;
 	struct node *right;
@@ -19,26 +20,26 @@ typedef struct node
 
 struct stack
 {
-    int data;
+    char* data;
     struct stack* next;
 };
  
 
  
+char global_hash[SHA_DIGEST_LENGTH*2] = {0};
 
-
-struct node* new_node(int data);
+struct node* new_node(char* data);
 int isEmpty(struct stack *stack_head);
-void push(struct stack** stack_head, int data);
-int pop(struct stack** stack_head);
+void push(struct stack** stack_head, char* data);
+char* pop(struct stack** stack_head);
 int peek(struct stack* stack_head);
 void print2DUtil(node *root, int space);
 void print2D(node *root);
-int hash(int data);
-int get_root_hash(node *root);
+char* hash(char* data);
+char* get_root_hash(node *root);
 void authentication_values(node*root, node *leaf, struct stack*** stack_head);
 void pop_stack(struct stack** stack_head);
-struct stack* newNode(int data);
+struct stack* newNode(char* data);
 int siblings_hash[2];
 
 
@@ -47,21 +48,21 @@ int siblings_hash[2];
 
 int main(){
 /*create root*/
-    node *root   = new_node(1);
-    root->left   = new_node(2);
+    node *root   = new_node("root");
+    root->left   = new_node("node 2");
     root->left->parent = root;
-    root->right  = new_node(3);
+    root->right  = new_node("node 3");
     root->right->parent = root;
     struct stack* stack = NULL;
 
 
-    root->left->left  = new_node(4);
+    root->left->left  = new_node("node 4");
     root->left->left->parent = root->left;
-    root->left->right = new_node(5);
+    root->left->right = new_node("node 5");
     root->left->right->parent = root->left;
-    root->right->left  = new_node(6);
+    root->right->left  = new_node("node 6");
     root->right->left->parent = root->right;
-    root->right->right = new_node(7);
+    root->right->right = new_node("node 7");
     root->right->right->parent = root->right;
 
 
@@ -77,9 +78,9 @@ int main(){
     print2D(root);
     
 
-    printf("leaf is %d\nAuthentication hashes are:\n", root->right->left->hash);
+    printf("leaf is %s\nAuthentication hashes are:\n", root->right->left->hash);
     authentication_values(root, root->right->left, &stack);
-    printf("Hashes needed to verify leaf %d are:\n", root->right->left->data);
+    printf("Hashes needed to verify leaf %s are:\n", root->right->left->data);
     pop_stack(stack);
  
     return 0;
@@ -106,7 +107,7 @@ void authentication_values(node* root, node *leaf, struct stack*** stack_head){
 
 
 
-int get_root_hash(node *root){
+char* get_root_hash(node *root){
     return root->hash;
 }
 
@@ -115,7 +116,7 @@ int get_root_hash(node *root){
 
 
 
-struct node* new_node(int data){
+struct node* new_node(char* data){
     // Allocate memory for new node 
     struct node* node = (struct node*)malloc(sizeof(struct node));
 
@@ -151,21 +152,24 @@ void hash_tree(node *root)
     else{
         hash_tree(root->right);
         hash_tree(root->left);
-        root->hash = hash(root->left->hash + root->right->hash);
+        //strcpy(root->hash, hash(strcat(root->left->hash, root->right->hash)));
     }
     
 }
 
 
-int hash(int data){
-    return data + 10;
+char* hash(char* data){
+    // char temp[1024];
+    // strcpy(temp, data);
+    // return strcat(temp, "hashed" );
+    return data;
 }
 
 
 void pop_stack(struct stack** stack_head){
     
     while (peek(stack_head) > 0){
-        printf("\t\t%d\n", pop(&stack_head));
+        printf("\t\t%s\n", pop(&stack_head));
     }
     
 }
@@ -190,7 +194,7 @@ void print2DUtil(node *root, int space)
     for (int i = COUNT; i < space; i++){
         printf(" ");
     }   
-    printf("%d\n", root->hash);
+    printf("%s\n", root->hash);
  
     // Process left child
     print2DUtil(root->left, space);
@@ -214,23 +218,27 @@ int isEmpty(struct stack *stack_head)
     return !stack_head;
 }
  
-void push(struct stack** stack_head, int data)
+void push(struct stack** stack_head, char* data)
 {
     struct stack* stack_node = newNode(data);
     stack_node->next = *stack_head;
     *stack_head = stack_node;
-    printf("\t\t%d\n", data);
+    printf("\t\t%s\n", data);
 }
  
-int pop(struct stack** stack_head)
+char* pop(struct stack** stack_head)
 {
     if (isEmpty(*stack_head))
-        return -1;
+        return NULL;
     struct stack* temp = *stack_head;
     *stack_head = (*stack_head)->next;
-    int popped = temp->data;
+    char popped[1024];
+    printf("in pop, temp->data: %s\n", temp->data);
+    strcpy(popped, temp->data);
+    printf("in pop after strcpy, popped: %s\n", popped);
+
     free(temp);
- 
+    printf("in pop after strcpy, popped after free temp: %s\n", popped);
     return popped;
 }
  
@@ -241,7 +249,7 @@ int peek(struct stack* stack_head)
     return stack_head->data;
 }
 
-struct stack* newNode(int data)
+struct stack* newNode(char* data)
 {
     struct stack* stack_node =
               (struct stack*) malloc(sizeof(struct stack));
