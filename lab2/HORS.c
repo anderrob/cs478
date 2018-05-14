@@ -7,7 +7,7 @@
 
 void key_gen(int t, int k, int l);
 void sign(char* m, int t, int k);
-void verify();
+int verify(char* m, int t, int k);
 char* random_string(int length);
 void hash_string(char* s);
 char* string_to_binary(char* s);
@@ -17,10 +17,12 @@ int t_choose_k();
 void init_t_array(int*, int t);
 char public_key[1024][SHA_DIGEST_LENGTH*2+1] = {'/0'};
 char signature[32][5] = {'\0'};
+char ver[32][SHA_DIGEST_LENGTH*2+1] = {'\0'};
 char** secret_key = NULL;
 char** split = NULL;
 char hash[SHA_DIGEST_LENGTH*2] = {0};
-int* indices = NULL;
+int* sign_indices = NULL;
+int* ver_indices = NULL;
 int count = 0;
 
 int main() {
@@ -36,7 +38,24 @@ int main() {
   int choose = t_choose_k();
   S(m, k, t, subset);
   key_gen(t, k, l);
-  sign("hfeiowaburiaoieyabu", t, k);
+  sign("hfeiowaieyabu", t, k);
+  if(verify("hfeiowaburiaoieyabu", t, k) == 1){
+    printf("Accepted\n");
+  } else{
+    printf("Rejected\n");
+  }
+  sign("fneuiabrhbauosefhau", t, k);
+  if(verify("fneuiabrhbauosefhau", t, k) == 1){
+    printf("Accepted\n");
+  } else {
+    printf("Rejected\n");
+  }
+  sign("fneuiabrhbauosefhau", t, k);
+  if(verify("hello", t, k) == 1){
+    printf("Accepted\n");
+  } else {
+    printf("Rejected\n");
+  }
   return 0;
 }
 
@@ -155,15 +174,33 @@ void sign(char* m, int t, int k) {
   hash_string(m);
   binary = string_to_binary(hash);
   divide_string(binary, size);
-  indices = malloc(sizeof(int)*sizeof(split));
+  sign_indices = malloc(sizeof(int)*k);
   for(int i=0; i<k; i++){
-    indices[i] = btoi(split[i]);
-    strcpy(signature[i], secret_key[indices[i]]);
+    sign_indices[i] = btoi(split[i]);
+    strcpy(signature[i], secret_key[sign_indices[i]]);
   }
 }
 
-void verify() {
-
+int verify(char* m, int t, int k) {
+  char* binary;
+  int check = 1;
+  int size = log2(t);
+  split = NULL;
+  memset(&hash, '\0', sizeof(hash));
+  hash_string(m);
+  binary = string_to_binary(hash);
+  divide_string(binary, size);
+  ver_indices = malloc(sizeof(int)*k);
+  for(int i=0; i<k; i++){
+    ver_indices[i] = btoi(split[i]);
+  }
+  for(int i=0; i<k; i++){
+    hash_string(signature[i]);
+    if(strcmp(hash, public_key[ver_indices[i]]) != 0){
+      return 0;
+    }
+  }
+  return check;
 }
 
 void hash_string(char* s){
