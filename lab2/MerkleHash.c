@@ -6,7 +6,10 @@
 #include <openssl/sha.h>
 #include <limits.h>
 #define COUNT 6
-#define TREE_HEIGHT 3;
+#define TREE_HEIGHT (3*2);
+#define num_leaves 8
+#define num_nodes 15
+int c; //node counter
 
 typedef struct node 
 {
@@ -58,25 +61,36 @@ struct stack* createStack(unsigned capacity);
 void authentication_values(node* root, node *leaf, struct stack* stack);
 
 
+void make_tree(node *root);
+
 int main(){
 /*create root*/
+    c=1;
+    //make node 0
+    node *root   = new_node(c);
+    c++;
+    make_tree(root);
     
-    node *root   = new_node("root");
-    root->left   = new_node("node 2");
-    root->left->parent = root;
-    root->right  = new_node("node 3");
-    root->right->parent = root;
-    struct stack* stack = createStack(5);
 
 
-    root->left->left  = new_node("node 4");
-    root->left->left->parent = root->left;
-    root->left->right = new_node("node 5");
-    root->left->right->parent = root->left;
-    root->right->left  = new_node("node 6");
-    root->right->left->parent = root->right;
-    root->right->right = new_node("node 7");
-    root->right->right->parent = root->right;
+
+
+    // node *root   = new_node("root");
+    // root->left   = new_node("node 2");
+    // root->left->parent = root;
+    // root->right  = new_node("node 3");
+    // root->right->parent = root;
+    // struct stack* stack = createStack(5);
+
+
+    // root->left->left  = new_node("node 4");
+    // root->left->left->parent = root->left;
+    // root->left->right = new_node("node 5");
+    // root->left->right->parent = root->left;
+    // root->right->left  = new_node("node 6");
+    // root->right->left->parent = root->right;
+    // root->right->right = new_node("node 7");
+    // root->right->right->parent = root->right;
 
 
     // root->left->left->left  = new_node(8);
@@ -87,19 +101,41 @@ int main(){
     // root->right->left->right  = new_node(13);
     // root->right->right->left  = new_node(14);
     // root->right->right->right  = new_node(15); 
-    hash_tree(root);
+    //hash_tree(root);
     print2D(root);
     
 
-    printf("leaf is %s\nAuthentication hashes are:\n", root->right->left->hash);
-    authentication_values(root, root->right->left, stack);
-    printf("Hashes needed to verify leaf %s are:\n", root->right->left->data);
-    pop_stack(stack);
+   // printf("leaf is %s\nAuthentication hashes are:\n", root->right->left->hash);
+    //authentication_values(root, root->right->left, stack);
+    //printf("Hashes needed to verify leaf %s are:\n", root->right->left->data);
+    //pop_stack(stack);
  
     return 0;
 }
 
+void make_tree(node *root){
+    char temp[50];
+    // base case
+    if (c == num_nodes){
+       return;
+    }
+    if (root->left == NULL){
+        snprintf(temp, sizeof(temp), "%d", c);
+        root->left = new_node(temp);
+        c++;
+    }
+    if (root->left == NULL && root->right != NULL){
+        snprintf(temp, sizeof(temp), "%d", c);
+        root->right = new_node(temp);
+        c++;
+    }
+    
+    make_tree(root->left);
+    make_tree(root->right);
+    
 
+
+}
 void authentication_values(node* root, node *leaf, struct stack* stack){
 
     if(leaf->hash == root->hash){
@@ -209,8 +245,8 @@ void print2DUtil(node *root, int space)
     for (int i = COUNT; i < space; i++){
         printf(" ");
     }   
-    printf("%s", root->hash);
- 
+    printf("%s", root->data);
+    sleep(1);
     // Process left child
     print2DUtil(root->left, space);
 }
