@@ -33,7 +33,7 @@ struct stack
  
  
 char global_hash[SHA_DIGEST_LENGTH*2] = {0};
-char temp[1024];
+
 struct node* new_node(char* data);
 // int isEmpty(struct stack *stack_head);
 // void push(struct stack** stack_head, char* data);
@@ -46,7 +46,7 @@ char* get_root_hash(node *root);
 
 void pop_stack(struct stack* stack_head);
 // struct stack* newNode(char* data);
-char* siblings_hash;
+int siblings_hash[2];
 
 
 char* pop(struct stack* stack);
@@ -173,14 +173,10 @@ void hash_tree(node *root)
 
 
 char* hash(char* data){
-    
-    strcpy(global_hash, data);
-    //printf("hash temp: %s\n", global_hash);
-    strcat(global_hash, "hashed" );
-    //printf("hash2 temp: %s\n", temp);
-    return global_hash;
-    
-    //return data;
+    // char temp[1024];
+    // strcpy(temp, data);
+    // return strcat(temp, "hashed" );
+    return data;
 }
 
 
