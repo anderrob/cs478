@@ -6,7 +6,7 @@
 #include <openssl/sha.h>
 
 void key_gen(int t, int k, int l);
-void sign(char* m, int t);
+void sign(char* m, int t, int k);
 void verify();
 char* random_string(int length);
 void hash_string(char* s);
@@ -15,18 +15,19 @@ void fill_T();
 void S(int m, int k, int t, int subset[]);
 int t_choose_k();
 void init_t_array(int*, int t);
-char** public_key = NULL;
+char public_key[1024][SHA_DIGEST_LENGTH*2+1] = {'/0'};
+char signature[32][5] = {'\0'};
 char** secret_key = NULL;
 char** split = NULL;
 char hash[SHA_DIGEST_LENGTH*2] = {0};
-int* hashes = NULL;
+int* indices = NULL;
 int count = 0;
 
 int main() {
   int l = 4;
   int t = 1024;
   int k = 32;
-  int b = 15;
+  int b = 4;
   int m = 30;
   int t_array[t];
   int subset[k];
@@ -35,9 +36,7 @@ int main() {
   int choose = t_choose_k();
   S(m, k, t, subset);
   key_gen(t, k, l);
-  printf("PUBLIC: %s\n", public_key[0]);
-  printf("SECRET: %d\n", secret_key[0]);
-  // sign(k);
+  sign("hfeiowaburiaoieyabu", t, k);
   return 0;
 }
 
@@ -90,12 +89,10 @@ char* random_string(int length){
 }
 
 void key_gen(int t, int k, int l){
-  public_key = malloc(sizeof(char*)*(t));
   secret_key = malloc(sizeof(char*)*(t));
   for(int i=0; i<t; i++){
     secret_key[i] = random_string(l);
     hash_string(secret_key[i]);
-    public_key[i] = malloc(sizeof(char)*SHA_DIGEST_LENGTH*2);
     strcpy(public_key[i], hash);
     memset(&hash, '\0', sizeof(hash));
   }
@@ -103,23 +100,20 @@ void key_gen(int t, int k, int l){
 
 void divide_string(char* s, int size) {
   int str_size = strlen(s);
-  int i;
-  int part_size;
   int count = 0;
   int index = 0;
   char* temp;
 
-  part_size = str_size / size;
-  split = malloc(sizeof(char*)*(str_size/part_size));
+  split = malloc(sizeof(char*)*(str_size / size));
   for(int i=0; i<str_size+1; i++){
     if(i == 0){
-      temp = malloc(sizeof(char)*(part_size+1));
+      temp = malloc(sizeof(char)*(size+1));
     }
-    if(i % part_size == 0 && i != 0){
+    if(i % size == 0 && i != 0){
       split[index] = temp;
       index++;
       count = 0;
-      temp = malloc(sizeof(char)*(part_size+1));
+      temp = malloc(sizeof(char)*(size+1));
     }
     temp[count] = s[i];
     count++;
@@ -155,17 +149,21 @@ int btoi(char* s){
   return (int)r;
 }
 
-void sign(char* m, int t) {
+void sign(char* m, int t, int k) {
   char* binary;
-  double size = log2(t);
+  int size = log2(t);
   hash_string(m);
   binary = string_to_binary(hash);
-  divide_string(binary, (int)size);
-  hashes = malloc(sizeof(int)*sizeof(split));
-  for(int i=0; i<5; i++){
-    hashes[i] = btoi(split[i]);
-    printf("HASHES: %d\n", hashes[i]);
+  divide_string(binary, size);
+  indices = malloc(sizeof(int)*sizeof(split));
+  for(int i=0; i<k; i++){
+    indices[i] = btoi(split[i]);
+    strcpy(signature[i], secret_key[indices[i]]);
   }
+}
+
+void verify() {
+
 }
 
 void hash_string(char* s){
