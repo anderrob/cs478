@@ -7,8 +7,8 @@
 #define LEAVES 32
 #define COUNT 3
 #define PARENT ((int)floor(((i-1)/2)))
-#define LEAF 28
-#define LEAF_TO_VERIFY 28
+#define LEAF 30
+#define LEAF_TO_VERIFY 30
 
 typedef struct node
 {
@@ -35,13 +35,12 @@ void push(node** root, char* input);
 void print2DUtil(node *root, int space);
 void print2D(node *root);
 char* get_root_hash(node *root);
-void authentication_values();
 
 int main(){
     /*create root*/
     int num_nodes = (LEAVES*2)-1;
     printf("num_nodes: %d\n", num_nodes);
-
+    
 
     node* root[num_nodes];
 
@@ -66,7 +65,7 @@ int main(){
             sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
         }
         strcpy(root[i]->hash, catted);
-        //strcpy(root[i]->hash, "leaf");
+        
     }
     for (int i = (((num_nodes-1)/2)-1); i >= 0; i--){
         memset(&global_hash[0], '\0', sizeof(global_hash));
@@ -74,7 +73,7 @@ int main(){
         unsigned char catted[82] = {'0'};
         strcpy(catted, root[i]->left->hash);
         strcat(catted, root[i]->right->hash);
-        SHA1((unsigned char*)root[i]->left->hash, strlen(root[i]->left->hash), temp);
+        SHA1((unsigned char*)catted, strlen(catted), temp);
         for(int j=0; j<SHA_DIGEST_LENGTH; j++){
             sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
         }
@@ -90,18 +89,49 @@ int main(){
     //get authentication hashes
     printf("root hash is %s\n\n", get_root_hash(root[0]));
     char auth[20][41] = {"\0"};
+    int counter = 0;
+    int i = LEAF;
+    //strcpy(auth[counter], root[4]->left->hash);
     printf("leaf is %s\nAuthentication hashes are:\n", root[LEAF]);
-    authentication_values( &root, &auth );
+    while(i != 0){
+        if(root[PARENT]->left->hash == root[i]->hash){
+            strcpy(auth[counter], root[PARENT]->right->hash);
+            counter++;
+        }
+        else if(root[PARENT]->right->hash == root[i]->hash){
+            strcpy(auth[counter], root[PARENT]->left->hash);
+            counter++;
+        }
+        i = PARENT;
+    }
     // print authentication hashes
-    for(int i = 1; strcmp(auth[i], "\0"); i++){
+    for(int i = 0; strcmp(auth[i], "\0"); i++){
         printf("%s\n", auth[i]);
     }
 
-    printf("Is the leaf,%s, part of the tree?\t", root[LEAF_TO_VERIFY]);
-    // Verify
-    
-    authentication_values( root, auth );
+    printf("Is the leaf, %s, part of the tree?\t", root[LEAF_TO_VERIFY]);
+    unsigned char catted[82] = {'0'};
+    // Verify (requires to get the authentication hashes first in order to fill auth)
+    for(int i = 0; i < 3; i++){
+        memset(&global_hash[0], '\0', sizeof(global_hash));
+        unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
+        
+        strcpy(catted, auth[i]);
+        strcat(catted, auth[i+1]);
+        SHA1((unsigned char*)catted, strlen(catted), temp);
+        for(int j=0; j<SHA_DIGEST_LENGTH; j++){
+            sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
+        }
+        //strcpy(root[i]->hash, catted);
+    }
+    if (strcmp(catted, get_root_hash(root[0])) == 0){
+        printf("yes\n");
+    }
+    else{
+        printf("no\n");
+    }
 
+    printf("\ncatted: %s\nroot:%s\n", catted, get_root_hash(root[0]));
 
 
 
@@ -110,22 +140,7 @@ int main(){
     return 0;
 }
 
-void authentication_values(node *root, char** auth){
-    int counter = 0;
-    int i = LEAF;
 
-    while(i != 0){
-        if(root[PARENT].left->hash == root[i].hash){
-            strcpy(auth[counter], root[PARENT].right->hash);
-            counter++;
-        }
-        else if(root[PARENT].right->hash == root[i].hash){
-            strcpy(auth[counter], root[PARENT].left->hash);
-            counter++;
-        }
-        i = PARENT;
-    }
-}
 
 
 
