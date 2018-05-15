@@ -7,8 +7,8 @@
 #define LEAVES 32
 #define COUNT 10
 #define PARENT ((int)floor(((i-1)/2)))
-#define LEAF 30
-#define LEAF_TO_VERIFY 30
+#define LEAF 60
+#define LEAF_TO_VERIFY 60
 
 typedef struct node
 {
@@ -55,29 +55,12 @@ int main(){
     }
     for( int i = ((num_nodes-1)/2); i <num_nodes; i++ ){
       hash_leaf(root[i]);
-        // memset(&global_hash[0], '\0', sizeof(global_hash));
-        // unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
-        // unsigned char catted[41] = {'0'};
-        //
-        // SHA1((unsigned char*)root[i]->data, strlen(root[i]->data), temp);
-        // for(int j=0; j<SHA_DIGEST_LENGTH; j++){
-        //     sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
-        // }
-        // strcpy(root[i]->hash, catted);
+
 
     }
     for (int i = (((num_nodes-1)/2)-1); i >= 0; i--){
         hash_tree(root[i]);
-        // memset(&global_hash[0], '\0', sizeof(global_hash));
-        // unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
-        // unsigned char catted[82] = {'0'};
-        // strcpy(catted, root[i]->left->hash);
-        // strcat(catted, root[i]->right->hash);
-        // SHA1((unsigned char*)catted, strlen(catted), temp);
-        // for(int j=0; j<SHA_DIGEST_LENGTH; j++){
-        //     sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
-        // }
-        // strcpy(root[i]->hash, catted);
+
     }
 
 
@@ -104,6 +87,10 @@ int main(){
         }
         i = PARENT;
     }
+
+
+
+
     // print authentication hashes
     for(int i = 0; strcmp(auth[i], "\0"); i++){
         printf("%s\n", auth[i]);
