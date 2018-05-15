@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #define LEAVES 16
-
+#define COUNT 3
 
 typedef struct node
 {
-    int hash;
+    char* hash;
     int num;
     struct node* left;
     struct node* right;
@@ -43,9 +43,13 @@ int main(){
         root[i]->left = root[(i+i+1)];
         root[i]->right = root[(i+i+2)];
     }
-   
-    
+    for( int i = num_nodes; i >((num_nodes-1)/2); i-- ){
+        strcpy(root[i]->hash, "hash");
+    }
 
+
+    
+    print2D(root[0]);
  
  
     return 0;
@@ -99,4 +103,32 @@ int peek(link_node* root)
 }
  
 
-
+void print2DUtil(node *root, int space)
+{
+    // Base case
+    if (root == NULL)
+        return;
+ 
+    // Increase distance between levels
+    space += COUNT;
+ 
+    // Process right child first
+    print2DUtil(root->right, space);
+ 
+    // Print current node after space
+    // count
+    printf("\n");
+    for (int i = COUNT; i < space; i++)
+        printf(" ");
+    printf("%d\n", root->num);
+ 
+    // Process left child
+    print2DUtil(root->left, space);
+}
+ 
+// Wrapper over print2DUtil()
+void print2D(node *root)
+{
+   // Pass initial space count as 0
+   print2DUtil(root, 0);
+}
