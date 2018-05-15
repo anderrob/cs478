@@ -5,7 +5,7 @@
 #include <math.h>
 #include <openssl/sha.h>
 #define LEAVES 32
-#define COUNT 3
+#define COUNT 10
 #define PARENT ((int)floor(((i-1)/2)))
 #define LEAF 30
 #define LEAF_TO_VERIFY 30
@@ -25,8 +25,8 @@ typedef struct link_node
     struct link_node* next;
 }link_node;
 
-char concat_hash[SHA_DIGEST_LENGTH*4] = {0};
-char global_hash[SHA_DIGEST_LENGTH*2] = {0};
+char concat_hash[(SHA_DIGEST_LENGTH*4)+1] = {'\0'};
+char global_hash[(SHA_DIGEST_LENGTH*2)+1] = {'\0'};
 node* newNode(char* input);
 link_node* newlink_node(char* input);
 int isEmpty(node *root);
@@ -71,16 +71,17 @@ int main(){
 
     }
     for (int i = (((num_nodes-1)/2)-1); i >= 0; i--){
-        memset(&global_hash[0], '\0', sizeof(global_hash));
-        unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
-        unsigned char catted[82] = {'0'};
-        strcpy(catted, root[i]->left->hash);
-        strcat(catted, root[i]->right->hash);
-        SHA1((unsigned char*)catted, strlen(catted), temp);
-        for(int j=0; j<SHA_DIGEST_LENGTH; j++){
-            sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
-        }
-        strcpy(root[i]->hash, catted);
+        hash_tree(root[i]);
+        // memset(&global_hash[0], '\0', sizeof(global_hash));
+        // unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
+        // unsigned char catted[82] = {'0'};
+        // strcpy(catted, root[i]->left->hash);
+        // strcat(catted, root[i]->right->hash);
+        // SHA1((unsigned char*)catted, strlen(catted), temp);
+        // for(int j=0; j<SHA_DIGEST_LENGTH; j++){
+        //     sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
+        // }
+        // strcpy(root[i]->hash, catted);
     }
 
 
@@ -150,7 +151,7 @@ void hash_tree(node* parent_node) {
   strcpy(concat_hash, parent_node->left->hash);
   strcat(concat_hash, parent_node->right->hash);
   hash_string(concat_hash);
-  strcpy(parent_node->hash, concat_hash);
+  strcpy(parent_node->hash, global_hash);
 }
 
 void hash_string(char* s) {
