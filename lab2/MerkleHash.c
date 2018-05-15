@@ -4,15 +4,15 @@
 #include <time.h>
 #include <math.h>
 #include <openssl/sha.h>
-#define LEAVES 16
+#define LEAVES 1024
 #define COUNT 3
 
 typedef struct node
 {
-    char* hash;
-    int num;
-    struct node* left;
-    struct node* right;
+    char hash[(SHA_DIGEST_LENGTH*2)+1]; //8 bytes
+    //int num; // 4 bytes
+    struct node* left; //8 bytes
+    struct node* right; //8 bytes
 }node;
  
 typedef struct link_node
@@ -23,12 +23,14 @@ typedef struct link_node
 }link_node;
 
 
-node* newNode(int num);
-link_node* newlink_node(int num);
+node* newNode(char* input);
+link_node* newlink_node(char* input);
 int isEmpty(node *root);
-void push(node** root, int num);
-int pop(link_node** root);
-int peek(link_node* root);
+void push(node** root, char* input);
+// int pop(link_node** root);
+// int peek(link_node* root);
+void print2DUtil(node *root, int space);
+void print2D(node *root);
 
 int main(){
     /*create root*/
@@ -39,7 +41,7 @@ int main(){
     node* root[num_nodes];
 
     for ( int i=0; i< num_nodes; i++){
-        root[i] = newNode(i);
+        root[i] = newNode("hashhashhashhashhashhashhashhashhashhash");
     }
 
     for( int i = 0; i <((num_nodes-1)/2); i++ ){
@@ -47,7 +49,7 @@ int main(){
         root[i]->right = root[(i+i+2)];
     }
     for( int i = num_nodes; i >((num_nodes-1)/2); i-- ){
-        strcpy(root[i]->hash, "hash");
+        //strcpy(root[i]->hash, "has");
     }
 
 
@@ -63,14 +65,14 @@ int main(){
 
 
  
-node* newNode(int num)
+node* newNode(char* input)
 {
     node* node =
-              (struct node*) malloc(sizeof(node));
-    node->num = num;
+              (struct node*) malloc(0xfffff);
+    //node->num = num;
     node->left = NULL;
     node->right = NULL;
-    node->hash = NULL;
+    strcpy(node->hash, input);
     return node;
 }
  
@@ -87,24 +89,24 @@ int isEmpty(node *root)
 //     printf("%d pushed to stack\n", num);
 // }
  
-int pop(link_node** root)
-{
-    if (isEmpty(*root))
-        return -1;
-    link_node* temp = *root;
-    *root = (*root)->next;
-    int popped = temp->num;
-    free(temp);
+// int pop(node** root)
+// {
+//     if (isEmpty(*root))
+//         return -1;
+//     node* temp = *root;
+//     *root = (*root)->next;
+//     int popped = temp->num;
+//     free(temp);
  
-    return popped;
-}
+//     return popped;
+// }
  
-int peek(link_node* root)
-{
-    if (isEmpty(root))
-        return -1;
-    return root->num;
-}
+// int peek(node* root)
+// {
+//     if (isEmpty(root))
+//         return -1;
+//     return root->num;
+// }
  
 
 void print2DUtil(node *root, int space)
@@ -124,7 +126,7 @@ void print2DUtil(node *root, int space)
     printf("\n");
     for (int i = COUNT; i < space; i++)
         printf(" ");
-    printf("%d\n", root->num);
+    printf("%s\n", root->hash);
  
     // Process left child
     print2DUtil(root->left, space);

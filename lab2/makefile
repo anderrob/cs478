@@ -1,5 +1,5 @@
 CC:=gcc
-CFLAGS:= -w -g -pthread -lcrypto -lm
+CFLAGS:= -w -g -fpack-struct=16 -pthread -lcrypto -lm
 
 all:	merkle hors
 
