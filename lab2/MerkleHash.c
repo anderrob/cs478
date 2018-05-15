@@ -37,6 +37,7 @@ void print2DUtil(node *root, int space);
 void print2D(node *root);
 char* get_root_hash(node *root);
 void hash_tree(node* parent_node);
+void hash_leaves(node* leaf);
 void hash_string(char* s);
 
 int main(){
@@ -59,15 +60,16 @@ int main(){
         strcpy(root[i]->data, "leaf");
     }
     for( int i = ((num_nodes-1)/2); i <num_nodes; i++ ){
-        memset(&global_hash[0], '\0', sizeof(global_hash));
-        unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
-        unsigned char catted[41] = {'0'};
-
-        SHA1((unsigned char*)root[i]->data, strlen(root[i]->data), temp);
-        for(int j=0; j<SHA_DIGEST_LENGTH; j++){
-            sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
-        }
-        strcpy(root[i]->hash, catted);
+      hash_leaf(root[i]);
+        // memset(&global_hash[0], '\0', sizeof(global_hash));
+        // unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
+        // unsigned char catted[41] = {'0'};
+        //
+        // SHA1((unsigned char*)root[i]->data, strlen(root[i]->data), temp);
+        // for(int j=0; j<SHA_DIGEST_LENGTH; j++){
+        //     sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
+        // }
+        // strcpy(root[i]->hash, catted);
 
     }
     for (int i = (((num_nodes-1)/2)-1); i >= 0; i--){
@@ -152,6 +154,11 @@ void hash_tree(node* parent_node) {
   strcat(concat_hash, parent_node->right->hash);
   hash_string(concat_hash);
   strcpy(parent_node->hash, global_hash);
+}
+
+void hash_leaf(node* leaf) {
+  hash_string(leaf->data);
+  strcpy(leaf->hash, global_hash);
 }
 
 void hash_string(char* s) {
