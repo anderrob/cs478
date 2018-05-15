@@ -5,6 +5,7 @@
 #include <math.h>
 #include <openssl/sha.h>
 
+
 void key_gen(int t, int k, int l);
 void sign(char* m, int t, int k);
 int verify(char* m, int t, int k);
@@ -16,7 +17,7 @@ void S(int m, int k, int t, int subset[]);
 int t_choose_k();
 void init_t_array(int*, int t);
 char public_key[1024][SHA_DIGEST_LENGTH*2+1] = {'/0'};
-char signature[32][5] = {'\0'};
+char signature[32][129] = {'\0'};
 char ver[32][SHA_DIGEST_LENGTH*2+1] = {'\0'};
 char** secret_key = NULL;
 char** split = NULL;
@@ -26,10 +27,10 @@ int* ver_indices = NULL;
 int count = 0;
 
 int main() {
-  int l = 4;
+  int l = 128;
   int t = 1024;
   int k = 32;
-  int b = 4;
+  int b = 8;
   int m = 30;
   int t_array[t];
   int subset[k];
@@ -110,6 +111,7 @@ char* random_string(int length){
 void key_gen(int t, int k, int l){
   secret_key = malloc(sizeof(char*)*(t));
   for(int i=0; i<t; i++){
+
     secret_key[i] = random_string(l);
     hash_string(secret_key[i]);
     strcpy(public_key[i], hash);
