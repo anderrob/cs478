@@ -17,7 +17,7 @@ typedef struct node
     struct node* left; //8 bytes
     struct node* right; //8 bytes
 }node;
- 
+
 typedef struct link_node
 {
     int num;
@@ -25,6 +25,7 @@ typedef struct link_node
     struct link_node* next;
 }link_node;
 
+char concat_hash[SHA_DIGEST_LENGTH*4] = {0};
 char global_hash[SHA_DIGEST_LENGTH*2] = {0};
 node* newNode(char* input);
 link_node* newlink_node(char* input);
@@ -35,12 +36,14 @@ void push(node** root, char* input);
 void print2DUtil(node *root, int space);
 void print2D(node *root);
 char* get_root_hash(node *root);
+void hash_tree(node* parent_node);
+void hash_string(char* s);
 
 int main(){
     /*create root*/
     int num_nodes = (LEAVES*2)-1;
     printf("num_nodes: %d\n", num_nodes);
-    
+
 
     node* root[num_nodes];
 
@@ -65,7 +68,7 @@ int main(){
             sprintf((char*)&(catted[j*2]), "%02x", temp[j]);
         }
         strcpy(root[i]->hash, catted);
-        
+
     }
     for (int i = (((num_nodes-1)/2)-1); i >= 0; i--){
         memset(&global_hash[0], '\0', sizeof(global_hash));
@@ -82,10 +85,10 @@ int main(){
 
 
 
-    
+
     //print tree
     print2D(root[0]);
-    
+
     //get authentication hashes
     printf("root hash is %s\n\n", get_root_hash(root[0]));
     char auth[20][41] = {"\0"};
@@ -115,7 +118,7 @@ int main(){
     for(int i = 0; i < 3; i++){
         memset(&global_hash[0], '\0', sizeof(global_hash));
         unsigned char temp[SHA_DIGEST_LENGTH] = {'0'};
-        
+
         strcpy(catted, auth[i]);
         strcat(catted, auth[i+1]);
         SHA1((unsigned char*)catted, strlen(catted), temp);
@@ -142,7 +145,22 @@ int main(){
 
 
 
+void hash_tree(node* parent_node) {
+  memset (&concat_hash[0], '\0', sizeof(concat_hash));
+  strcpy(concat_hash, parent_node->left->hash);
+  strcat(concat_hash, parent_node->right->hash);
+  hash_string(concat_hash);
+  strcpy(parent_node->hash, concat_hash);
+}
 
+void hash_string(char* s) {
+  memset(&global_hash[0], '\0', sizeof(global_hash));
+  unsigned char temp[SHA_DIGEST_LENGTH] = {'\0'};
+  SHA1((unsigned char*)s, strlen(s), temp);
+  for(int i=0; i<SHA_DIGEST_LENGTH; i++){
+    sprintf((char*)&(global_hash[i*2]), "%02x", temp[i]);
+  }
+}
 
 
 char* get_root_hash(node *root){
@@ -152,7 +170,7 @@ char* get_root_hash(node *root){
 
 
 
- 
+
 node* newNode(char* input)
 {
     node* node =
@@ -164,12 +182,12 @@ node* newNode(char* input)
     //strcpy(node->hash, input);
     return node;
 }
- 
+
 int isEmpty(node *root)
 {
     return !root;
 }
- 
+
 // void push(node** root, int num)
 // {
 //     node* node = newNode(num);
@@ -177,7 +195,7 @@ int isEmpty(node *root)
 //     *root = node;
 //     printf("%d pushed to stack\n", num);
 // }
- 
+
 // int pop(node** root)
 // {
 //     if (isEmpty(*root))
@@ -186,41 +204,41 @@ int isEmpty(node *root)
 //     *root = (*root)->next;
 //     int popped = temp->num;
 //     free(temp);
- 
+
 //     return popped;
 // }
- 
+
 // int peek(node* root)
 // {
 //     if (isEmpty(root))
 //         return -1;
 //     return root->num;
 // }
- 
+
 
 void print2DUtil(node *root, int space)
 {
     // Base case
     if (root == NULL)
         return;
- 
+
     // Increase distance between levels
     space += COUNT;
- 
+
     // Process right child first
     print2DUtil(root->right, space);
- 
+
     // Print current node after space
     // count
     printf("\n");
     for (int i = COUNT; i < space; i++)
         printf(" ");
     printf("%s\n", root->hash);
- 
+
     // Process left child
     print2DUtil(root->left, space);
 }
- 
+
 // Wrapper over print2DUtil()
 void print2D(node *root)
 {
