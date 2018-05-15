@@ -35,6 +35,7 @@ void push(node** root, char* input);
 void print2DUtil(node *root, int space);
 void print2D(node *root);
 char* get_root_hash(node *root);
+void authentication_values();
 
 int main(){
     /*create root*/
@@ -83,36 +84,23 @@ int main(){
 
 
     
-    
+    //print tree
     print2D(root[0]);
     
+    //get authentication hashes
     printf("root hash is %s\n\n", get_root_hash(root[0]));
-    
     char auth[20][41] = {"\0"};
-   
-    
-    int counter = 0;
-    int i = LEAF;
-    //strcpy(auth[counter], root[4]->left->hash);
     printf("leaf is %s\nAuthentication hashes are:\n", root[LEAF]);
-    while(i != 0){
-        if(root[PARENT]->left->hash == root[i]->hash){
-            strcpy(auth[counter], root[PARENT]->right->hash);
-            counter++;
-        }
-        else if(root[PARENT]->right->hash == root[i]->hash){
-            strcpy(auth[counter], root[PARENT]->left->hash);
-            counter++;
-        }
-        i = PARENT;
-    }
-    // printf("%s", *auth[0]);
+    authentication_values( &root, &auth );
+    // print authentication hashes
     for(int i = 1; strcmp(auth[i], "\0"); i++){
         printf("%s\n", auth[i]);
     }
 
-    //printf("Is the leaf,%s, part of the tree?\t", root[LEAF_TO_VERIFY]);
-
+    printf("Is the leaf,%s, part of the tree?\t", root[LEAF_TO_VERIFY]);
+    // Verify
+    
+    authentication_values( root, auth );
 
 
 
@@ -122,7 +110,22 @@ int main(){
     return 0;
 }
 
+void authentication_values(node *root, char** auth){
+    int counter = 0;
+    int i = LEAF;
 
+    while(i != 0){
+        if(root[PARENT].left->hash == root[i].hash){
+            strcpy(auth[counter], root[PARENT].right->hash);
+            counter++;
+        }
+        else if(root[PARENT].right->hash == root[i].hash){
+            strcpy(auth[counter], root[PARENT].left->hash);
+            counter++;
+        }
+        i = PARENT;
+    }
+}
 
 
 
