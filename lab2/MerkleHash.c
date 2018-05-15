@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <math.h>
+#include <openssl/sha.h>
 #define LEAVES 16
 #define COUNT 3
 
@@ -67,6 +70,7 @@ node* newNode(int num)
     node->num = num;
     node->left = NULL;
     node->right = NULL;
+    node->hash = NULL;
     return node;
 }
  
