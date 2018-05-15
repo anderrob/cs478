@@ -4,8 +4,11 @@
 #include <time.h>
 #include <math.h>
 #include <openssl/sha.h>
-#define LEAVES 16
+#define LEAVES 32
 #define COUNT 3
+#define PARENT ((int)floor(((i-1)/2)))
+#define LEAF 28
+#define LEAF_TO_VERIFY 28
 
 typedef struct node
 {
@@ -76,15 +79,53 @@ int main(){
         }
         strcpy(root[i]->hash, catted);
     }
-    // strcpy(root[((num_nodes-1)/2)]->data, "data");
+
+
 
     
     
     print2D(root[0]);
- 
+    
     printf("root hash is %s\n\n", get_root_hash(root[0]));
+    
+    char auth[20][41] = {"\0"};
+   
+    
+    int counter = 0;
+    int i = LEAF;
+    //strcpy(auth[counter], root[4]->left->hash);
+    printf("leaf is %s\nAuthentication hashes are:\n", root[LEAF]);
+    while(i != 0){
+        if(root[PARENT]->left->hash == root[i]->hash){
+            strcpy(auth[counter], root[PARENT]->right->hash);
+            counter++;
+        }
+        else if(root[PARENT]->right->hash == root[i]->hash){
+            strcpy(auth[counter], root[PARENT]->left->hash);
+            counter++;
+        }
+        i = PARENT;
+    }
+    // printf("%s", *auth[0]);
+    for(int i = 1; strcmp(auth[i], "\0"); i++){
+        printf("%s\n", auth[i]);
+    }
+
+    //printf("Is the leaf,%s, part of the tree?\t", root[LEAF_TO_VERIFY]);
+
+
+
+
+
+
+
     return 0;
 }
+
+
+
+
+
 
 char* get_root_hash(node *root){
     return root->hash;
