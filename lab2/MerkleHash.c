@@ -18,21 +18,15 @@ typedef struct node
     struct node* right; //8 bytes
 }node;
 
-typedef struct link_node
-{
-    int num;
-    struct node* node;
-    struct link_node* next;
-}link_node;
+
 
 char concat_hash[(SHA_DIGEST_LENGTH*4)+1] = {'\0'};
 char global_hash[(SHA_DIGEST_LENGTH*2)+1] = {'\0'};
 node* newNode(char* input);
-link_node* newlink_node(char* input);
+
 int isEmpty(node *root);
 void push(node** root, char* input);
-// int pop(link_node** root);
-// int peek(link_node* root);
+
 void print2DUtil(node *root, int space);
 void print2D(node *root);
 char* get_root_hash(node *root);
