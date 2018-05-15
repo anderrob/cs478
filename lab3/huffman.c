@@ -95,7 +95,9 @@ void init(const char *s) {
 	int i, frequency[128] = {0};
 	char c[16];
 
-	while (*s) frequency[(int)*s++]++;
+	while (*s){
+     frequency[(int)*s++]++;
+  }
 
 	for (i = 0; i < 128; i++)
 		if (frequency[i]) insert(new_node(frequency[i], i, 0, 0));
@@ -108,6 +110,7 @@ void init(const char *s) {
 
 void compress(const char *s, char *out) {
 	while (*s) {
+    printf("%c  %d\n", *s, *s);
 		strcpy(out, code[*s]);
 		out += strlen(code[*s]);
     *s++;
