@@ -33,13 +33,15 @@ void print2DUtil(node *root, int space);
 void print2D(node *root);
 char* get_root_hash(node *root);
 void hash_tree(node* parent_node);
-void hash_leaves(node* leaf);
 void hash_string(char* s);
-void verify_hash( char auth[5][41], int i);
+void verify_hash( char (*auth)[41], int i);
 
 int main(){
     /*create root*/
     int num_nodes = (LEAVES*2)-1;
+    int num_levels = (int)log2(LEAVES);
+    int num_levels_1 = (num_levels+1);
+
 
     printf("num_nodes: %d\n", num_nodes);
 
