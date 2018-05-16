@@ -4,18 +4,18 @@
 #include <time.h>
 #include <math.h>
 #include <openssl/sha.h>
-#define LEAVES 16
-#define COUNT 10
+#define LEAVES 1024
+#define COUNT 15
 #define PARENT ((int)floor(((i-1)/2)))
 #define MOST_LEFT_LEAF ((int)(num_nodes-1)/2)
-#define LEAF 30
-#define LEAF_TO_VERIFY 30
+#define LEAF 2000
+#define LEAF_TO_VERIFY 2000
 
 
 typedef struct node
 {
     char hash[(SHA_DIGEST_LENGTH*2)+1]; //8 bytes
-    char data[(SHA_DIGEST_LENGTH*2)+1];; // 4 bytes
+    char data[(SHA_DIGEST_LENGTH*2)+1];; // 8 bytes
     struct node* left; //8 bytes
     struct node* right; //8 bytes
 }node;
@@ -82,7 +82,8 @@ int main(){
     //printf("\nroot hash is %s\n\n", get_root_hash(root[0]));
 
 
-    char auth[5][41] = {"\0"};
+    char auth[num_levels_1][41];
+    memset(auth,'\0', sizeof(auth) );
     int counter = 0;
     int i = LEAF;
     strcpy(auth[counter], root[LEAF]);
@@ -110,7 +111,7 @@ int main(){
 
 
     // print authentication hashes
-    for(int i = 0; strcmp(auth[i], "\0"); i++){
+    for(int i = 0; i<num_levels_1; i++){
         printf("%s\n", auth[i]);
     }
     i = 0;
@@ -122,11 +123,11 @@ int main(){
     memset(&concat_hash[0], '\0', sizeof(concat_hash)); 
     strcpy(concat_hash, auth[i] );
     // Verify (requires to get the authentication hashes first in order to fill auth)
-    while( i < 4){        
+    while( i < num_levels){        
         verify_hash(auth, i);
         i++;
     }
-    printf("On concat = %s\n",concat_hash);
+    //printf("On concat = %s\n",concat_hash);
     if (strcmp(concat_hash, get_root_hash(root[0])) == 0){
         printf("yes\n\n");
     }
@@ -144,10 +145,10 @@ int main(){
 //END MAIN
 
 
-void verify_hash( char auth[5][41], int i) {
+void verify_hash( char (*auth)[41], int i) {
     // printf("On i=%d\n",i);
     // printf("On auth[i+1] = %s\n",auth[i+1]);
-    printf("On concat = %s\n",concat_hash);
+    //printf("On concat = %s\n",concat_hash);
     strcat(concat_hash, auth[i+1]);
     hash_string(concat_hash);
     strcpy(concat_hash, global_hash);
