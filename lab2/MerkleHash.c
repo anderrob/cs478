@@ -8,9 +8,9 @@
 #define COUNT 10
 #define PARENT ((int)floor(((i-1)/2)))
 #define MOST_LEFT_LEAF ((int)(num_nodes-1)/2)
-#define LEAF 28
-#define LEAF_TO_VERIFY 28
-#define NUM_LEVELS ((int)(LEAVES*2)-1)
+#define LEAF 30
+#define LEAF_TO_VERIFY 30
+
 
 typedef struct node
 {
@@ -35,7 +35,7 @@ char* get_root_hash(node *root);
 void hash_tree(node* parent_node);
 void hash_leaves(node* leaf);
 void hash_string(char* s);
-void verify_hash( char auth[NUM_LEVELS][41], int i);
+void verify_hash( char auth[5][41], int i);
 
 int main(){
     /*create root*/
@@ -74,13 +74,13 @@ int main(){
 
 
     //print tree
-    //print2D(root[0]);
+    print2D(root[0]);
 
     //get authentication hashes
     //printf("\nroot hash is %s\n\n", get_root_hash(root[0]));
 
 
-    char auth[NUM_LEVELS][41] = {"\0"};
+    char auth[5][41] = {"\0"};
     int counter = 0;
     int i = LEAF;
     strcpy(auth[counter], root[LEAF]);
@@ -120,10 +120,11 @@ int main(){
     memset(&concat_hash[0], '\0', sizeof(concat_hash)); 
     strcpy(concat_hash, auth[i] );
     // Verify (requires to get the authentication hashes first in order to fill auth)
-    while( i < NUM_LEVELS){        
+    while( i < 4){        
         verify_hash(auth, i);
         i++;
     }
+    printf("On concat = %s\n",concat_hash);
     if (strcmp(concat_hash, get_root_hash(root[0])) == 0){
         printf("yes\n\n");
     }
@@ -141,10 +142,10 @@ int main(){
 //END MAIN
 
 
-void verify_hash( char auth[NUM_LEVELS][41], int i) {
+void verify_hash( char auth[5][41], int i) {
     // printf("On i=%d\n",i);
     // printf("On auth[i+1] = %s\n",auth[i+1]);
-    // printf("On concat = %s\n",concat_hash);
+    printf("On concat = %s\n",concat_hash);
     strcat(concat_hash, auth[i+1]);
     hash_string(concat_hash);
     strcpy(concat_hash, global_hash);
