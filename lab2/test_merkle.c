@@ -18,14 +18,15 @@ int main(){
     strcpy(auth[1], "1");
     strcpy(auth[2], "2");
     strcpy(auth[3], "3");
-    strcpy(auth[4], "4");
+    strcpy(auth[4], "hashhashhashhashhashhashhashhashhashhash");
     strcpy(auth[5], "5");
     strcpy(auth[6], "6");
     strcpy(auth[7], "7");
-    //printf("size of auth = %d\n", sizeof(auth));
+    // printf("size of auth4 = %d\n", sizeof(auth[4]));
+    // printf("contents of auth4 = %s\n", auth[4]);
     form(auth);
-    get_path( auth, 12 );
-    verify_nodes(auth);
+    get_path( auth, auth[4] );
+    // verify_nodes(auth);
     if (verify_nodes(auth)){
         printf("\nIT ALL WORKS\n");
     }
