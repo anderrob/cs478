@@ -53,7 +53,7 @@ char* form(char data[][41]);
 
 
 int verify_nodes(char data[][41]){
-    
+
     int leaves = (sizeof(data)/sizeof(*data[0]));
     int num_nodes = (leaves*2)-1;
 
@@ -73,7 +73,7 @@ int do_all_no_print(char data[][41], int node_num){
     /*create root*/
 
     int leaves = (sizeof(data)/sizeof(*data[0]));
-  
+
     int num_nodes = (leaves*2)-1;
     int num_levels = (int)log2(leaves);
     int num_levels_1 = (num_levels+1);
@@ -93,7 +93,7 @@ int do_all_no_print(char data[][41], int node_num){
     //printf("data at 0 = %s\n", data[0]);
     int j = 0;
     for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
-        
+
         strcpy(root[i]->data, data[j]);
         //printf("root[i]-> data: %s\n data: %s\n", root[i]->data, data[j]);
         j++;
@@ -109,7 +109,7 @@ int do_all_no_print(char data[][41], int node_num){
         hash_tree(root[i]);
     }
 
-   
+
 
 
     // char auth[num_levels_1][41];
@@ -123,10 +123,10 @@ int do_all_no_print(char data[][41], int node_num){
     // int counter = 0;
     // int i = leaf;
     // strcpy(auth[counter], root[leaf]->hash);
-   
+
     // printf("AUTH[COUNTER] @ I: %d and COUNTER: %d\t%s\n",i,counter, auth[counter]);
     // counter++;
-    
+
     // while(i != 0){
     //     if(root[PARENT]->left->hash == root[i]->hash){
     //         strcpy(auth[counter], root[PARENT]->right->hash);
@@ -182,17 +182,17 @@ int do_all_no_print(char data[][41], int node_num){
             if(strcmp(get_root_hash(root[0]), concat_hash) == 0){ //if root is same as leaves that make it up
                 //printf("yes\n\n");
                 return 1;
-                
+
             }else{
                 //printf("no\n\n");
                 return 0;
-                
+
             }
         }
 
     }
 
-    
+
 
 
 
@@ -206,7 +206,7 @@ int do_all_no_print(char data[][41], int node_num){
 
 char* form(char data[][41]){
     int leaves = (sizeof(data)/sizeof(*data[0]));
-  
+
     int num_nodes = (leaves*2)-1;
     int num_levels = (int)log2(leaves);
     int num_levels_1 = (num_levels+1);
@@ -226,7 +226,7 @@ char* form(char data[][41]){
     // printf("data at 0 = %s\n", data[0]);
     int j = 0;
     for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
-        
+
         strcpy(root[i]->data, data[j]);
         // printf("root[i]-> data: %s\n data: %s\n", root[i]->data, data[j]);
         j++;
@@ -250,8 +250,8 @@ char* form(char data[][41]){
 
 
 char** get_path(char data[][41], char* leaf_hash){
-    int leaves = (sizeof(data)/sizeof(*data[0]));
-  
+    int leaves = 1024;
+
     int num_nodes = (leaves*2)-1;
     int num_levels = (int)log2(leaves);
     int num_levels_1 = (num_levels+1);
@@ -271,7 +271,7 @@ char** get_path(char data[][41], char* leaf_hash){
     // printf("data at 0 = %s\n", data[0]);
     int j = 0;
     for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
-        
+
         strcpy(root[i]->data, data[j]);
         // printf("root[i]-> data: %s\n data: %s\n", root[i]->data, data[j]);
         j++;
@@ -292,7 +292,7 @@ char** get_path(char data[][41], char* leaf_hash){
 
     int leaf = 12;
     for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
-        
+
         // printf("ROOT data: %s\n", root[i]->data);
         // printf("ROOT at %d: %s\n", i, root[i]->hash);
         // printf("\nleaf hash is %s\n\n", leaf_hash);
@@ -301,7 +301,7 @@ char** get_path(char data[][41], char* leaf_hash){
             leaf = i;
         }
     }
-    
+
     //print tree
     //print2D(root[0]);
 
@@ -309,10 +309,14 @@ char** get_path(char data[][41], char* leaf_hash){
     //printf("\nroot hash is %s\n\n", get_root_hash(root[0]));
 
 
-    char auth[num_levels_1][41];
-    memset(auth,'\0', sizeof(auth) );
+    // char auth[num_levels_1][41];
+    char** auth = malloc(sizeof(char*)*num_levels_1);
+    for(int i=0; i<num_levels_1; i++){
+      auth[i] = malloc(sizeof(char)*42);
+    }
+    // memset(auth,'\0', sizeof(auth) );
     int counter = 0;
-    
+
     int i = leaf;
     //strcpy(auth[counter], root[leaf]->hash);
     counter++;
