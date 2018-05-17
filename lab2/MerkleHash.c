@@ -56,9 +56,9 @@ int main(){
         root[i]->left = root[(i+i+1)];
         root[i]->right = root[(i+i+2)];
     }
-    for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
-        strcpy(root[i]->data, "leaf");
-    }
+    // for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
+    //     strcpy(root[i]->data, "leaf");
+    // }
     for( int i = (MOST_LEFT_LEAF); i < num_nodes; i++ ){
         //printf("i leaf hash: %d\n", i);
         hash_leaf(root[i]);
@@ -72,6 +72,11 @@ int main(){
 
     }
 
+
+
+    for(int i =0; i<num_nodes; i++){
+
+    }
 
 
 
