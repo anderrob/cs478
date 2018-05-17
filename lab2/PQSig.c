@@ -13,6 +13,7 @@ typedef struct {
 char* itob(int i);
 void pq_key_gen(int l, int k, int t, sk secret, pk public);
 void pq_sign (int k, int t, char* m, sk secret);
+void pq_ver(int k, int t, char* m, pk public, int st);
 int h[33] = {0};
 
 sk secret;
@@ -23,6 +24,7 @@ char v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
 
 char sign_s[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
 char sign_v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
+char ver_v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
 
 int main() {
   int t = 1024;
@@ -32,6 +34,7 @@ int main() {
   pk public;
   pq_key_gen(l, k, t, secret, public);
   pq_sign(k, t, "hello", secret);
+  pq_ver(k, t, "hello", public, secret.st);
 
   //TODO: Form the merkle tree using v
 
@@ -80,6 +83,34 @@ void pq_sign (int k, int t, char* m, sk secret) {
       secret.st++;
     }
   }
+  secret.st = 1;
+}
+
+void pq_ver(int k, int t, char* m, pk public, int st) {
+  char* binary;
+  int size = log2(t);
+  if(secret.st > public.d){
+    exit(0);
+  } else {
+    hash_string(m);
+    binary = string_to_binary(hash);
+    divide_string(binary, size);
+    for(int i=0; i<k; i++){
+      h[i] = btoi(split[i]);
+    }
+    for(int j=0; j<k; j++){
+      int temp = (st-1)+h[j];
+      hash_string(sign_s[temp]);
+      strcpy(ver_v[temp], hash);
+      //call verify
+      int b = 1;
+      if(b == 0){
+        printf("Failed\n");
+        exit(1);
+      }
+    }
+  }
+  printf("Success\n");
 }
 
 char* itob(int i) {
