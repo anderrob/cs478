@@ -1,4 +1,5 @@
 #include "./HORS.h"
+#include "./merkle_hash.h"
 
 typedef struct {
   char* z;
@@ -6,7 +7,7 @@ typedef struct {
 } sk;
 
 typedef struct {
-
+  char R[SHA_DIGEST_LENGTH*2+1];
   int d;
 } pk;
 
@@ -36,8 +37,6 @@ int main() {
   pq_sign(k, t, "hello", secret);
   pq_ver(k, t, "hello", public, secret.st);
 
-  //TODO: Form the merkle tree using v
-
   return 0;
 }
 
@@ -54,6 +53,7 @@ void pq_key_gen(int l, int k, int t, sk secret, pk public) {
     hash_string(s[i]);
     strcpy(v[i], hash);
   }
+  strcpy(public.R, form(v));
 }
 
 void pq_sign (int k, int t, char* m, sk secret) {
