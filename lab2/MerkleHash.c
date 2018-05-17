@@ -4,12 +4,12 @@
 #include <time.h>
 #include <math.h>
 #include <openssl/sha.h>
-#define LEAVES 1024
-#define COUNT 15
+#define LEAVES 8
+#define COUNT 10
 #define PARENT ((int)floor(((i-1)/2)))
 #define MOST_LEFT_LEAF ((int)(num_nodes-1)/2)
-#define LEAF 2000
-#define LEAF_TO_VERIFY 2000
+#define LEAF 12
+#define LEAF_TO_VERIFY 12
 
 
 typedef struct node
