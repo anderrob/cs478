@@ -38,7 +38,7 @@ void print2D(node *root);
 char* get_root_hash(node *root);
 void hash_tree(node* parent_node);
 // void hash_string_merkle(char* s);
-void verify_hash( char (*auth)[41], int i);
+char* hash_siblings( char left[41], char right[41] );
 int everything(int leaf, char** data);
 char** get_path(char data[][41], char* leaf_hash);
 int verify_nodes(char data[][41]);
@@ -59,7 +59,9 @@ int verify_nodes(char data[][41]){
 
     //for each given node, check if same as tree leaf
     for (int i = 0; i < leaves; i++){
-        printf("verifying node: %s\n", data[i]);
+        //printf("verifying node: %s\n", data[i]);
+        //printf("I: %d\n", i);
+        //printf("MOST LEFT _LEAF + I: %d\n", MOST_LEFT_LEAF + i);
         if (do_all_no_print(data, MOST_LEFT_LEAF + i) != 1){
             return 0;
         }
@@ -67,7 +69,7 @@ int verify_nodes(char data[][41]){
     return 1;
 }
 
-int do_all_no_print(char data[][41], int leaf){
+int do_all_no_print(char data[][41], int node_num){
     /*create root*/
 
     int leaves = (sizeof(data)/sizeof(*data[0]));
@@ -107,63 +109,90 @@ int do_all_no_print(char data[][41], int leaf){
         hash_tree(root[i]);
     }
 
-    for (int i = (MOST_LEFT_LEAF-1); i >= 0; i--){
-        //printf("i tree hash: %d\n", i);
-        hash_tree(root[i]);
-    }
+   
 
 
-    char auth[num_levels_1][41];
-    memset(auth,'\0', sizeof(auth) );
+    // char auth[num_levels_1][41];
+    // memset(auth,'\0', sizeof(auth) );
 
 
-    // leaf is current leaf number to verify fits into tree
-    // counter is counter for temporary auth array
-    // auth[] stores each consecutive has to see if it all hashes up to root hash
+    // // leaf is current leaf number to verify fits into tree
+    // // counter is counter for temporary auth array
+    // // auth[] stores each consecutive has to see if it all hashes up to root hash
 
-    int counter = 0;
-    int i = leaf;
-    strcpy(auth[counter], root[leaf]->hash);
-    counter++;
+    // int counter = 0;
+    // int i = leaf;
+    // strcpy(auth[counter], root[leaf]->hash);
+   
+    // printf("AUTH[COUNTER] @ I: %d and COUNTER: %d\t%s\n",i,counter, auth[counter]);
+    // counter++;
     
-    while(i != 0){
-        if(root[PARENT]->left->hash == root[i]->hash){
-            strcpy(auth[counter], root[PARENT]->right->hash);
+    // while(i != 0){
+    //     if(root[PARENT]->left->hash == root[i]->hash){
+    //         strcpy(auth[counter], root[PARENT]->right->hash);
+    //         printf("sibling data: %s\nAUTH[COUNTER] @ I: %d and COUNTER: %d\n%s\n\n",root[PARENT]->left->data,i,counter, auth[counter]);
+    //         counter++;
+    //     }
+    //     else if(root[PARENT]->right->hash == root[i]->hash){
+    //         strcpy(auth[counter], root[PARENT]->left->hash);
+    //         printf("sibling data: %s\nAUTH[COUNTER] @ I: %d and COUNTER: %d\n%s\n\n",root[PARENT]->left->data,i,counter, auth[counter]);
+    //         counter++;
+    //     }
 
-            counter++;
-        }
-        else if(root[PARENT]->right->hash == root[i]->hash){
-            strcpy(auth[counter], root[PARENT]->left->hash);
+    //     i = PARENT;
+    //     printf("i after: %d\n", i);
+    // }
 
-            counter++;
-        }
+    // i = 0;
 
-        i = PARENT;
-        //printf("i after: %d\n", i);
-    }
+    // memset(&concat_hash[0], '\0', sizeof(concat_hash));
+    // strcpy(concat_hash, auth[i] );
+    // // Verify (requires to get the authentication hashes first in order to fill auth)
+    // while( i < num_levels){
+    //     hash_siblings(auth, i);
+    //     i++;
+    // }
 
-    i = 0;
+    // if (strcmp(concat_hash, get_root_hash(root[0])) == 0){
+    //     printf("yes\n\n");
+    //     return 1;
+    // }
+    // else{
+    //     printf("no\n\n");
+    //     return 0;
+    // }
+
+    //printf("root hash is: %s\n\n", root[0]->hash);
 
     memset(&concat_hash[0], '\0', sizeof(concat_hash));
-    strcpy(concat_hash, auth[i] );
-    // Verify (requires to get the authentication hashes first in order to fill auth)
-    while( i < num_levels){
-        verify_hash(auth, i);
-        i++;
-    }
-    //printf("On concat = %s\n",concat_hash);
-    if (strcmp(concat_hash, get_root_hash(root[0])) == 0){
-        printf("yes\n\n");
-        return 1;
-    }
-    else{
-        printf("no\n\n");
-        return 0;
+    int i = node_num; // leaf number
+    while(1){
+        if(i%2 == 1 ){ //me left
+            //printf("I am left sibling\n");
+            strcpy(concat_hash, hash_siblings(root[i]->hash, root[i+1]->hash));//hash me || sib
+        }
+        if(i%2 == 0){ // sib left
+            //printf("I am right sibling\n");
+            strcpy(concat_hash, hash_siblings(root[i-1]->hash, root[i]->hash));//hash sib || me
+        }
+        //printf("concat hash is: %s\n",concat_hash);
+        if( PARENT != 0){ // parent is not root
+            i = PARENT;
+        }else{
+            if(strcmp(get_root_hash(root[0]), concat_hash) == 0){ //if root is same as leaves that make it up
+                //printf("yes\n\n");
+                return 1;
+                
+            }else{
+                //printf("no\n\n");
+                return 0;
+                
+            }
+        }
+
     }
 
-
-
-    //printf("\nnum_levels: %d\n\n", num_levels);
+    
 
 
 
@@ -213,12 +242,7 @@ char* form(char data[][41]){
         hash_tree(root[i]);
     }
 
-    for (int i = (MOST_LEFT_LEAF-1); i >= 0; i--){
-        //printf("i tree hash: %d\n", i);
-        hash_tree(root[i]);
 
-
-    }
     printf("\nRoot hash: %s\n\n", get_root_hash(root[0]));
     return get_root_hash(root[0]);
 
@@ -263,12 +287,6 @@ char** get_path(char data[][41], char* leaf_hash){
         hash_tree(root[i]);
     }
 
-    for (int i = (MOST_LEFT_LEAF-1); i >= 0; i--){
-        //printf("i tree hash: %d\n", i);
-        hash_tree(root[i]);
-
-
-    }
         hash_string_merkle(leaf_hash);
         strcpy(leaf_hash, global_hash);
 
@@ -418,14 +436,14 @@ int everything(int leaf, char** data){
     i = 0;
 
 
-    printf("\nIs the leaf, %s, part of the tree?\t", root[leaf]);
+    //printf("\nIs the leaf, %s, part of the tree?\t", root[leaf]);
     i = 0;
 
     memset(&concat_hash[0], '\0', sizeof(concat_hash));
     strcpy(concat_hash, auth[i] );
     // Verify (requires to get the authentication hashes first in order to fill auth)
     while( i < num_levels){
-        verify_hash(auth, i);
+        hash_siblings(auth, i);
         i++;
     }
     //printf("On concat = %s\n",concat_hash);
@@ -446,14 +464,13 @@ int everything(int leaf, char** data){
 //END MAIN
 
 
-void verify_hash( char (*auth)[41], int i) {
-    // printf("On i=%d\n",i);
-    // printf("On auth[i+1] = %s\n",auth[i+1]);
-    //printf("On concat = %s\n",concat_hash);
-    strcat(concat_hash, auth[i+1]);
-    hash_string_merkle(concat_hash);
-    strcpy(concat_hash, global_hash);
-
+char* hash_siblings( char left[41], char right[41] ) {
+    char cat[81];
+    memset(&cat[0], '\0', sizeof(cat));
+    strcpy(cat, left);
+    strcat(cat, right);
+    hash_string_merkle(cat);
+    return global_hash;
 }
 
 
