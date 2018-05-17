@@ -13,12 +13,10 @@ typedef struct {
 
 char* itob(int i);
 void pq_key_gen(int l, int k, int t, sk secret, pk public);
-void pq_sign (int k, int t, char* m, sk secret);
+void pq_sign (int k, int t, char* m, sk secret, int d);
 void pq_ver(int k, int t, char* m, pk public, int st);
 int h[33] = {0};
 
-sk secret;
-pk public;
 char* concat[1153] = {'\0'};
 char s[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
 char v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
@@ -34,7 +32,7 @@ int main() {
   sk secret;
   pk public;
   pq_key_gen(l, k, t, secret, public);
-  pq_sign(k, t, "hello", secret);
+  pq_sign(k, t, "hello", secret, public.d);
   pq_ver(k, t, "hello", public, secret.st);
 
   return 0;
@@ -56,10 +54,10 @@ void pq_key_gen(int l, int k, int t, sk secret, pk public) {
   strcpy(public.R, form(v));
 }
 
-void pq_sign (int k, int t, char* m, sk secret) {
+void pq_sign (int k, int t, char* m, sk secret, int d) {
   char* binary;
   int size = log2(t);
-  if(secret.st > public.d){
+  if(secret.st > d){
     exit(0);
   } else {
     hash_string(m);
@@ -89,7 +87,7 @@ void pq_sign (int k, int t, char* m, sk secret) {
 void pq_ver(int k, int t, char* m, pk public, int st) {
   char* binary;
   int size = log2(t);
-  if(secret.st > public.d){
+  if(st > public.d){
     exit(0);
   } else {
     hash_string(m);
