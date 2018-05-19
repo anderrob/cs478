@@ -19,7 +19,9 @@ int main() {
   int F[L];
   int mat[M][L/M];   //this is a m x n matrix
   int A[N][M];
+  int Mult[N][N];
   //inital F values
+  disperse(F, A, mat, Mult);
   init_F(F);
   print_F(F);
 
@@ -31,6 +33,39 @@ int main() {
   init_A(A);
   print_A(A);
 
+  multiply_matrices(A, mat, Mult);
+  print_Mult(Mult);
+
+
+}
+
+void disperse(int F[L], int A[N][M], int mat[M][N], int Mult[N][N]){
+  init_F(F);
+  init_mat(mat, F);
+  init_A(A);
+  multiply_matrices(A, mat, Mult);
+}
+
+void print_Mult(int Mult[N][N]){
+  for(int i=0; i<N; i++){
+    for(int j=0; j<N; j++){
+      printf("%d  ", Mult[i][j]);
+    }
+    printf("\n");
+  }
+}
+
+void multiply_matrices(int A[N][M], int mat[M][N], int Mult[N][N]){
+  for(int i=0; i<N; i++){
+    for(int j=0; j<N; j++){
+      Mult[i][j] = 0;
+      for(int k=0; k<M; k++){
+        for(int l=0; l<M; l++){
+          Mult[i][j] = A[i][k]*mat[l][j]+Mult[i][j];
+        }
+      }
+    }
+  }
 }
 
 void init_A(int A[N][M]){
