@@ -8,54 +8,99 @@
 #define N 8
 #define L 32
 
-void divide_string(int* s, int size);
-void init_F(int F[L]);
-void init_mat(int mat[M][L/M], int F[L]);
-void print_mat(int mat[M][L/M]);
-void init_A(int A[N][M]);
-void print_A(int A[N][M]);
+void divide_string(double* s, int size);
+void init_F(double F[L]);
+void init_mat(double mat[M][L/M], double F[L]);
+void print_mat(double mat[M][L/M]);
+void init_A(double A[N][M]);
+void print_A(double A[N][M]);
+void get_subset_A(double A[N][M], double A_subset[M][M]);
+void get_subset_F(double F[N][N]);
+int check_for_duplicates(int temp[4], int x);
+void recover(double A[N][M], double F[N][N], double A_prime_inverse[M][M], double A_subset[M][M]);
 
 int main() {
+  srand(time(NULL));
   int F[L];
-  int mat[M][L/M];   //this is a m x n matrix
-  int A[N][M];
-  int Mult[N][N];
-  //inital F values
-  disperse(F, A, mat, Mult);
-  init_F(F);
-  print_F(F);
+  double mat[M][L/M];   //this is a m x n matrix
+  double A[N][M];
+  double Mult[N][N];
+  double result[M][N];
+  double A_subset[M][M];
+  double A_prime_inverse[M][M];
 
-  //initial matrix
-  init_mat(mat, F);
-  print_mat(mat);
-
-  //Vandermonde matrix
-  init_A(A);
-  print_A(A);
-
-  multiply_matrices(A, mat, Mult);
-  print_Mult(Mult);
-
-
+  disperse(F, A, mat, Mult); //will be only diperse call
+  recover(A, F, A_prime_inverse, A_subset);
 }
 
-void disperse(int F[L], int A[N][M], int mat[M][N], int Mult[N][N]){
+void disperse(double F[L], double A[N][M], double mat[M][N], double Mult[N][N]){
   init_F(F);
   init_mat(mat, F);
   init_A(A);
   multiply_matrices(A, mat, Mult);
 }
 
-void print_Mult(int Mult[N][N]){
+int get_random_number(){
+  return rand() % 8;
+}
+
+int check_for_duplicates(int temp[4], int x){
+  for(int i=0; i<4; i++){
+    if(x == temp[i]){
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void get_subset_A(double A[N][M], double A_subset[M][M]){
+  int temp[4];
+  int x;
+  for(int i=0; i<4; i++){
+    while(1){
+      x = get_random_number();
+      if(check_for_duplicates(temp, x) == 1){
+        break;
+      }
+    }
+    temp[i] = x;
+  }
+  //TODO assign to array
+}
+
+void get_subset_F(double F[N][N]){
+  int temp[4];
+  int x;
+  for(int i=0; i<4; i++){
+    while(1){
+      x = get_random_number();
+      if(check_for_duplicates(temp, x) == 1){
+        break;
+      }
+    }
+    temp[i] = x;
+  }
+  //TODO assign to array
+}
+
+void recover(double A[N][M], double F[N][N], double A_prime_inverse[M][M], double A_subset[M][M]){
+  get_subset_A(A, A_subset);
+  get_subset_F(F, F_subset);
+  //calculate inverse of A prime
+  // multiply_matrices(A_prime_inverse, F_prime, result[M][N]);
+  //result contains M
+}
+
+void print_Mult(double Mult[N][N]){
   for(int i=0; i<N; i++){
     for(int j=0; j<N; j++){
-      printf("%d  ", Mult[i][j]);
+      printf("%.01f  ", Mult[i][j]);
     }
     printf("\n");
   }
 }
 
-void multiply_matrices(int A[N][M], int mat[M][N], int Mult[N][N]){
+void multiply_matrices(double A[N][M], double mat[M][N], double Mult[N][N]){
   for(int i=0; i<N; i++){
     for(int j=0; j<N; j++){
       Mult[i][j] = 0;
@@ -68,7 +113,7 @@ void multiply_matrices(int A[N][M], int mat[M][N], int Mult[N][N]){
   }
 }
 
-void init_A(int A[N][M]){
+void init_A(double A[N][M]){
   for(int i=0; i<N; i++){
     for(int j=0; j<M; j++){
       if(j==0){
@@ -80,22 +125,22 @@ void init_A(int A[N][M]){
   }
 }
 
-void print_A(int A[N][M]){
+void print_A(double A[N][M]){
   for(int i=0; i<N; i++){
     for(int j=0; j<M; j++){
-      printf("%d  ", A[i][j]);
+      printf("%.01f  ", A[i][j]);
     }
     printf("\n");
   }
 }
 
-void init_F(int F[L]){
+void init_F(double F[L]){
   for(int i=0; i<L; i++){
     F[i] = i;
   }
 }
 
-void init_mat(int mat[M][L/M], int F[L]){
+void init_mat(double mat[M][L/M], double F[L]){
   for(int i=0; i<M; i++){
     for(int j=0; j<L/M; j++){
       mat[i][j] = F[i*N + j];
@@ -103,17 +148,17 @@ void init_mat(int mat[M][L/M], int F[L]){
   }
 }
 
-void print_F(int F[L]){
+void print_F(double F[L]){
   for(int i=0; i<L; i++){
-    printf("%d ", F[i]);
+    printf("%.01f ", F[i]);
   }
   printf("\n");
 }
 
-void print_mat(int mat[M][L/M]){
+void print_mat(double mat[M][L/M]){
   for(int i=0; i<M; i++){
     for(int j=0; j<L/M; j++){
-      printf("%d  ", mat[i][j]);
+      printf("%.01f  ", mat[i][j]);
     }
     printf("\n");
   }
