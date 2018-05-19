@@ -1,6 +1,6 @@
 #include "./HORS.h"
 #include "./merkle_hash.h"
-
+#include <sys/time.h>
 typedef struct {
   char* z;
   int st;
@@ -29,12 +29,37 @@ int main() {
   int t = 1024;
   int k = 32;
   int l = 128;
+  struct timeval t1, t2, t3, t4;
+  double elapsedTime;
   sk secret;
   pk public;
+  gettimeofday(&t3, NULL);
+  gettimeofday(&t1, NULL);
   pq_key_gen(l, k, t, &secret, &public);
+  gettimeofday(&t2, NULL);
+  elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;
+  elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
+  elapsedTime = elapsedTime/1000;
+  printf("TIME ELAPSED KEYGEN: %f\n", elapsedTime);
+  gettimeofday(&t1, NULL);
   pq_sign(k, t, "hello", secret, public.d);
+  gettimeofday(&t2, NULL);  
+  elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;
+  elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
+  elapsedTime = elapsedTime/1000;
+  printf("TIME ELAPSED SIGN: %f\n", elapsedTime);
+  gettimeofday(&t1, NULL);
   pq_ver(k, t, "hello", public, secret.st);
-
+  gettimeofday(&t2, NULL);
+  elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;
+  elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
+  elapsedTime = elapsedTime/1000;
+  printf("TIME ELAPSED VERIFY: %f\n", elapsedTime);
+  gettimeofday(&t4, NULL);
+  elapsedTime = (t4.tv_sec - t3.tv_sec) * 1000.0;
+  elapsedTime += (t4.tv_usec - t3.tv_usec) / 1000.0;
+  elapsedTime = elapsedTime/1000;
+  printf("TIME ELAPSED PQSIG: %f\n", elapsedTime);
   return 0;
 }
 
@@ -75,7 +100,7 @@ void pq_sign (int k, int t, char* m, sk secret, int d) {
       strcpy(sign_s[temp], hash);
       hash_string(sign_s[temp]);
       strcpy(sign_v[temp], hash);
-      // get path for leaf
+      //get_path(v, sign_v[temp]);// get path for leaf
       // assign things to signature
       secret.st++;
     }
@@ -99,8 +124,8 @@ void pq_ver(int k, int t, char* m, pk public, int st) {
       int temp = (st-1)+h[j];
       hash_string(sign_s[temp]);
       strcpy(ver_v[temp], hash);
-      //call verify
-      int b = 1;
+      verify_nodes(ver_v);//call verify
+      int b = 1; 
       if(b == 0){
         printf("Failed\n");
         exit(1);
