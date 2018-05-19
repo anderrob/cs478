@@ -3,72 +3,118 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include "./vandermonde.h"
 
-void compute_matrix(char* F, int N, int m);
-void divide_string(char* F, int size);
-int **array2_create(int N, int m);
-void createVandermonde(int nx);
-void construct_vander_matrix(int N, int m);
-char** split = NULL;
-char** S = NULL;
-char*** M = NULL;
-double* A = NULL;
-int* input_array = NULL;
-int* temp = NULL;
+#define M 4
+#define N 8
+#define L 32
 
+void divide_string(int* s, int size);
+void init_F(int F[L]);
+void init_mat(int mat[M][L/M], int F[L]);
+void print_mat(int mat[M][L/M]);
+void init_A(int A[N][M]);
+void print_A(int A[N][M]);
 
 int main() {
-  char* F = "testing string for rabin";
-  int m = 3;
-  int N = strlen(F);
-  int nx = N;
-  compute_matrix(F, N, m);
-  construct_vander_matrix(N, m);
-  return 0;
+  int F[L];
+  int mat[M][L/M];   //this is a m x n matrix
+  int A[N][M];
+  int Mult[N][N];
+  //inital F values
+  disperse(F, A, mat, Mult);
+  init_F(F);
+  print_F(F);
+
+  //initial matrix
+  init_mat(mat, F);
+  print_mat(mat);
+
+  //Vandermonde matrix
+  init_A(A);
+  print_A(A);
+
+  multiply_matrices(A, mat, Mult);
+  print_Mult(Mult);
+
+
 }
 
-void construct_vander_matrix(int N, int m){
-  double temp[N];
-  double temp2[N];
+void disperse(int F[L], int A[N][M], int mat[M][N], int Mult[N][N]){
+  init_F(F);
+  init_mat(mat, F);
+  init_A(A);
+  multiply_matrices(A, mat, Mult);
+}
+
+void print_Mult(int Mult[N][N]){
   for(int i=0; i<N; i++){
-    temp[i] = i+1;
-    temp2[i] = (i+1)*10;
-  }
-  A = bivand1(N, temp, temp2);
-}
-
-void compute_matrix(char *F, int N, int m) {
-  divide_string(F, m);
-  S = malloc(sizeof(char*)*(N/m));
-  for(int i=1; i<=N/m; i++){
-    S[i-1] = malloc(sizeof(char)*m+1);
-    strcpy(S[i-1], split[i-1]);
-  }
-  M = malloc(sizeof(char**)*N/m);
-  for(int i=0; i<N/m; i++){
-    M[i] = S[i];
+    for(int j=0; j<N; j++){
+      printf("%d  ", Mult[i][j]);
+    }
+    printf("\n");
   }
 }
 
-void divide_string(char* s, int size) {
-  int str_size = strlen(s);
-  int count = 0;
-  int index = 0;
-  char* temp;
+void multiply_matrices(int A[N][M], int mat[M][N], int Mult[N][N]){
+  for(int i=0; i<N; i++){
+    for(int j=0; j<N; j++){
+      Mult[i][j] = 0;
+      for(int k=0; k<M; k++){
+        for(int l=0; l<M; l++){
+          Mult[i][j] = A[i][k]*mat[l][j]+Mult[i][j];
+        }
+      }
+    }
+  }
+}
 
-  split = malloc(sizeof(char*)*(str_size / size));
-  for(int i=0; i<str_size+1; i++){
-    if(i == 0){
-      temp = malloc(sizeof(char)*(size+1));
+void init_A(int A[N][M]){
+  for(int i=0; i<N; i++){
+    for(int j=0; j<M; j++){
+      if(j==0){
+        A[i][j] = 1;
+      } else {
+        A[i][j] = pow(i+1, j+1);
+      }
     }
-    if(i % size == 0 && i != 0){
-      split[index] = temp;
-      index++;
-      count = 0;
-      temp = malloc(sizeof(char)*(size+1));
+  }
+}
+
+void print_A(int A[N][M]){
+  for(int i=0; i<N; i++){
+    for(int j=0; j<M; j++){
+      printf("%d  ", A[i][j]);
     }
-    temp[count] = s[i];
-    count++;
+    printf("\n");
+  }
+}
+
+void init_F(int F[L]){
+  for(int i=0; i<L; i++){
+    F[i] = i;
+  }
+}
+
+void init_mat(int mat[M][L/M], int F[L]){
+  for(int i=0; i<M; i++){
+    for(int j=0; j<L/M; j++){
+      mat[i][j] = F[i*N + j];
+    }
+  }
+}
+
+void print_F(int F[L]){
+  for(int i=0; i<L; i++){
+    printf("%d ", F[i]);
+  }
+  printf("\n");
+}
+
+void print_mat(int mat[M][L/M]){
+  for(int i=0; i<M; i++){
+    for(int j=0; j<L/M; j++){
+      printf("%d  ", mat[i][j]);
+    }
+    printf("\n");
   }
 }
