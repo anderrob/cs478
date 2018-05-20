@@ -11,13 +11,13 @@
 
 
 
-void find_cofactor(long matrix[SIZE][SIZE], long submatrix[SIZE][SIZE], long subrow, long subcol, long subsize){
-    long i = 0;
-    long j = 0;
+void find_cofactor(double matrix[SIZE][SIZE], double submatrix[SIZE][SIZE], int subrow, int subcol, int subsize){
+    int i = 0;
+    int j = 0;
  
 
-    for (long row = 0; row < subsize; row++){
-        for (long col = 0; col < subsize; col++){
+    for (int row = 0; row < subsize; row++){
+        for (int col = 0; col < subsize; col++){
 
             if (row != subrow && col != subcol){
                 submatrix[i][j++] = matrix[row][col];
@@ -32,22 +32,22 @@ void find_cofactor(long matrix[SIZE][SIZE], long submatrix[SIZE][SIZE], long sub
 }
  
 
-long get_determinant(long matrix[SIZE][SIZE], long subsize){
-    long total = 0; 
+double get_determinant(double matrix[SIZE][SIZE], int subsize){
+    double total = 0; 
  
 
     if (subsize == 1)
         return matrix[0][0];
  
-    long submatrix[SIZE][SIZE]; 
+    double submatrix[SIZE][SIZE]; 
  
-    long cofactor = 1; 
+    int cofactor = 1; 
  
 
-    for (long f = 0; f < subsize; f++){
+    for (int i = 0; i < subsize; i++){
 
-        find_cofactor(matrix, submatrix, 0, f, subsize);
-        total += cofactor * matrix[0][f] * get_determinant(submatrix, subsize - 1);
+        find_cofactor(matrix, submatrix, 0, i, subsize);
+        total += cofactor * matrix[0][i] * get_determinant(submatrix, subsize - 1);
  
 
         cofactor *= -1;
@@ -58,10 +58,10 @@ long get_determinant(long matrix[SIZE][SIZE], long subsize){
  
 
 
-void print_table(long matrix[SIZE][SIZE]){
-    for (long i = 0; i < SIZE; i++){
-        for (long j = 0; j < SIZE; j++)
-            printf("%d\t", matrix[i][j]);
+void print_table(double matrix[SIZE][SIZE]){
+    for (int i = 0; i < SIZE; i++){
+        for (int j = 0; j < SIZE; j++)
+            printf("%.1f\t", matrix[i][j]);
         printf("\n");
     }
 }
