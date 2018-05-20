@@ -15,9 +15,9 @@ void print_mat(double mat[M][L/M]);
 void init_A(double A[N][M]);
 void print_A(double A[N][M]);
 void get_subset_A(double A[N][M], double A_subset[M][M]);
-void get_subset_F(double F[N][N]);
+void get_subset_F(double F[N][N], double F_subset[M][N]);
 int check_for_duplicates(int temp[4], int x);
-void recover(double A[N][M], double F[N][N], double A_prime_inverse[M][M], double A_subset[M][M]);
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N]);
 
 int main() {
   srand(time(NULL));
@@ -27,10 +27,11 @@ int main() {
   double Mult[N][N];
   double result[M][N];
   double A_subset[M][M];
-  double A_prime_inverse[M][M];
+  double F_subset[M][N];
+  double A_subset_inverse[M][M];
 
   disperse(F, A, mat, Mult); //will be only diperse call
-  recover(A, F, A_prime_inverse, A_subset);
+  recover(A, F, A_subset_inverse, A_subset, F_subset);
 }
 
 void disperse(double F[L], double A[N][M], double mat[M][N], double Mult[N][N]){
@@ -54,6 +55,25 @@ int check_for_duplicates(int temp[4], int x){
 }
 
 void get_subset_A(double A[N][M], double A_subset[M][M]){
+  int temp[M];
+  int x;
+  for(int i=0; i<M; i++){
+    while(1){
+      x = get_random_number();
+      if(check_for_duplicates(temp, x) == 1){
+        break;
+      }
+    }
+    temp[i] = x;
+  }
+  for(int i=0; i<M; i++){
+    for(int j=0; j<M; j++){
+      A_subset[i][j] = A[i][j];
+    }
+  }
+}
+
+void get_subset_F(double F[N][N], double F_subset[M][N]){
   int temp[4];
   int x;
   for(int i=0; i<4; i++){
@@ -65,29 +85,18 @@ void get_subset_A(double A[N][M], double A_subset[M][M]){
     }
     temp[i] = x;
   }
-  //TODO assign to array
-}
-
-void get_subset_F(double F[N][N]){
-  int temp[4];
-  int x;
-  for(int i=0; i<4; i++){
-    while(1){
-      x = get_random_number();
-      if(check_for_duplicates(temp, x) == 1){
-        break;
-      }
+  for(int i=0; i<M; i++){
+    for(int j=0; j<N; j++){
+      F_subset[i][j] = F[i][j];
     }
-    temp[i] = x;
   }
-  //TODO assign to array
 }
 
-void recover(double A[N][M], double F[N][N], double A_prime_inverse[M][M], double A_subset[M][M]){
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N]){
   get_subset_A(A, A_subset);
   get_subset_F(F, F_subset);
-  //calculate inverse of A prime
-  // multiply_matrices(A_prime_inverse, F_prime, result[M][N]);
+  //calculate inverse of A subset
+  // multiply_matrices(A_subset_inverse, F_subset, result[M][N]);
   //result contains M
 }
 
