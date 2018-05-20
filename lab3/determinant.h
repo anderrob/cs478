@@ -6,7 +6,7 @@
 #include <time.h>
 #include <math.h>
 #define SIZE 8
-
+//int SIZE = 4;
 
 
 
@@ -32,8 +32,8 @@ void find_cofactor(long matrix[SIZE][SIZE], long submatrix[SIZE][SIZE], long sub
 }
  
 
-long get_determinant(long matrix[SIZE][SIZE], long subsize){
-    long total = 0; 
+double get_determinant(long matrix[SIZE][SIZE], long subsize){
+    double total = 0; 
  
 
     if (subsize == 1)
@@ -61,7 +61,7 @@ long get_determinant(long matrix[SIZE][SIZE], long subsize){
 void print_table(long matrix[SIZE][SIZE]){
     for (long i = 0; i < SIZE; i++){
         for (long j = 0; j < SIZE; j++)
-            printf("%d\t", matrix[i][j]);
+            printf("%ld\t", matrix[i][j]);
         printf("\n");
     }
 }
