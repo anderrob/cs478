@@ -5,12 +5,12 @@
 #include <math.h>
 #include <openssl/sha.h>
 #include "huffman.h"
-#include "determinant.h"
-#include "vandermonde.h"
-#include "rabin.h"
+// #include "determinant.h"
+// #include "vandermonde.h"
+// #include "rabin.h"
 
-char global_hash[SHA_DIGEST_LENGTH*2] = {0};
-char global_concat_hash[(SHA_DIGEST_LENGTH*4)+1] = {'\0'};
+char global_hash[SHA256_DIGEST_LENGTH*2] = {0};
+char global_concat_hash[(SHA256_DIGEST_LENGTH*4)+1] = {'\0'};
 
 void concat_hash(char* string1, char* string2);
 void hash_string(char* s);
@@ -29,19 +29,19 @@ char* K;
 int h[33] = {0};
 
 char concat[139] = {'\0'};
-char s[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
-char v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
+char s[1024][SHA256_DIGEST_LENGTH*2+1] = {'\0'};
+char v[1024][SHA256_DIGEST_LENGTH*2+1] = {'\0'};
 
-char sign_s[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
-char sign_v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
-char ver_v[1024][SHA_DIGEST_LENGTH*2+1] = {'\0'};
+char sign_s[1024][SHA256_DIGEST_LENGTH*2+1] = {'\0'};
+char sign_v[1024][SHA256_DIGEST_LENGTH*2+1] = {'\0'};
+char ver_v[1024][SHA256_DIGEST_LENGTH*2+1] = {'\0'};
 typedef struct {
   char* z;
   int st;
 } sk;
 
 typedef struct {
-  char R[SHA_DIGEST_LENGTH*2+1];
+  char R[SHA256_DIGEST_LENGTH*2+1];
   int d;
 } pk;
 
@@ -67,36 +67,43 @@ int main(){
     int t = 1024;
     int k = 32;
 
-	char *data = "data to be compressed by our huffman algorithm";
+    char items[1024][100];
+    for(int i=0; i<1024; i++){
+      strcpy(items[i], "data to be compressed");
+    }
+	  char *data = "data to be compressed by our huffman algorithm";
     char buf[1024];
-    char MP[1024];
+    char MP[1024][100];
 
     printf("SENDER START\n\n");
-    
+
 
     // Huffman Compress message
     // M ← Compress(Mi)
     init(data);
-	compress(data, buf);
-    
+    for(int i=0; i<1024; i++){
+      compress(items[i], buf);
+      strcpy(MP[i], buf);
+    }
+
     printf("Compressed: %s\n", buf);
     strcpy(MP,buf);
 
     //Encrypt MP
     //HMAC C
-    
+
     concat_hash(MP, I);
 
 
-    disperse(F, A, mat, Mult);
+    // disperse(F, A, mat, Mult);
     printf("SENDER END\n\n");
     printf("RECEIVER START\n\n");
 
 
 
-    recover(A, F, A_subset_inverse, A_subset, F_subset);
+    // recover(A, F, A_subset_inverse, A_subset, F_subset);
     printf("Decompressed:\n");
-    decompress(buf, byte[1]);
+    // decompress(buf, byte[1]);
 
 
 
@@ -108,9 +115,9 @@ int main(){
 
 
 void fill_I(char I[1024]){
-    for (int i = 0; i < 10; i++){
-        sprintf(I[i], "%d", i);
-    }
+    // for (int i = 0; i < 10; i++){
+    //     sprintf(I[i], "%d", i);
+    // }
 }
 
 
@@ -138,13 +145,10 @@ void recursive_hash(int i, int j){
 
 void hash_string(char* s) {
     memset(&global_hash[0], '\0', sizeof(global_hash));
-    unsigned char temp[SHA_DIGEST_LENGTH] = {'\0'};
-    SHA1((unsigned char*)s, strlen(s), temp);
-    for(int i=0; i<SHA_DIGEST_LENGTH; i++){
+    unsigned char temp[SHA256_DIGEST_LENGTH] = {'\0'};
+    SHA256((unsigned char*)s, strlen(s), temp);
+    for(int i=0; i<SHA256_DIGEST_LENGTH; i++){
         sprintf((char*)&(global_hash[i*2]), "%02x", temp[i]);
     }
-  
+
 }
-
-
-
