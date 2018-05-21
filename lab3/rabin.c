@@ -61,13 +61,7 @@ void get_subset_A(double A[N][M], double A_subset[M][M]){
   int temp[M];
   int x;
   for(int i=0; i<M; i++){
-    while(1){
-      x = get_random_number();
-      if(check_for_duplicates(temp, x) == 1){
-        break;
-      }
-    }
-    temp[i] = x;
+    temp[i] = i;
   }
   for(int i=0; i<M; i++){
     for(int j=0; j<M; j++){
@@ -80,17 +74,11 @@ void get_subset_F(double F[N][N], double F_subset[M][N]){
   int temp[4];
   int x;
   for(int i=0; i<4; i++){
-    while(1){
-      x = get_random_number();
-      if(check_for_duplicates(temp, x) == 1){
-        break;
-      }
-    }
-    temp[i] = x;
+    temp[i] = i;
   }
   for(int i=0; i<M; i++){
     for(int j=0; j<N; j++){
-      F_subset[i][j] = F[i][j];
+      F_subset[i][j] = F[temp[i]][j];
     }
   }
 }
