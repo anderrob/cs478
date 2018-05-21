@@ -19,7 +19,7 @@ void print_A(double A[N][M]);
 void get_subset_A(double A[N][M], double A_subset[M][M]);
 void get_subset_F(double F[N][N], double F_subset[M][N]);
 int check_for_duplicates(int temp[4], int x);
-void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N],double result[M][N]);
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N], double result[M][N]);
 
 int main() {
   srand(time(NULL));
@@ -39,6 +39,7 @@ int main() {
 void disperse(double F[L], double A[N][M], double mat[M][N], double Mult[N][N]){
   init_F(F);
   init_mat(mat, F);
+  print_mat(mat);
   init_A(A);
   multiply_matrices(A, mat, Mult);
 }
@@ -70,7 +71,7 @@ void get_subset_A(double A[N][M], double A_subset[M][M]){
   }
   for(int i=0; i<M; i++){
     for(int j=0; j<M; j++){
-      A_subset[i][j] = A[i][j];
+      A_subset[i][j] = A[temp[i]][j];
     }
   }
 }
@@ -95,17 +96,32 @@ void get_subset_F(double F[N][N], double F_subset[M][N]){
 }
 
 void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N],double result[M][N]){
+  print_A(A);
   get_subset_A(A, A_subset);
   get_subset_F(F, F_subset);
+  print_A_subset(A_subset);
   //calculate inverse of A subset
+  // inverseFunc(A_subset, A_subset_inverse);
   inverseFunc(A_subset, A_subset_inverse);
+  print_A_subset_inverse(A_subset_inverse);
   // multiply_matrices(A_subset_inverse, F_subset, result[M][N]);
-  matrixMult(A_subset_inverse, F_subset,recover);
+  multiply_matrices2(A_subset_inverse, F_subset, result);
   //result contains M
-  print_Mult(result);
+  print_result(result);
+}
+
+void print_A_subset_inverse(double A_subset_inverse[M][M]){
+  printf("PRINTING A SUBSET INVERSE\n");
+  for(int i=0; i<M; i++){
+    for(int j=0; j<M; j++){
+      printf("%.10f\t", A_subset_inverse[i][j]);
+    }
+    printf("\n");
+  }
 }
 
 void print_Mult(double Mult[N][N]){
+  printf("PRINTING MULT\n");
   for(int i=0; i<N; i++){
     for(int j=0; j<N; j++){
       printf("%.0f\t", Mult[i][j]);
@@ -127,6 +143,19 @@ void multiply_matrices(double A[N][M], double mat[M][N], double Mult[N][N]){
   }
 }
 
+void multiply_matrices2(double A_subset_inverse[M][M], double F_subset[M][N], double result[M][N]){
+  for(int i=0; i<M; i++){
+    for(int j=0; j<N; j++){
+      result[i][j] = 0;
+      for(int k=0; k<M; k++){
+        for(int l=0; l<M; l++){
+          result[i][j] = A_subset_inverse[i][k]*F_subset[l][j]+result[i][j];
+        }
+      }
+    }
+  }
+}
+
 void init_A(double A[N][M]){
   for(int i=0; i<N; i++){
     for(int j=0; j<M; j++){
@@ -139,10 +168,30 @@ void init_A(double A[N][M]){
   }
 }
 
+void print_A_subset(double A_subset[M][M]){
+  printf("Printing A subset\n");
+  for(int i=0; i<M; i++){
+    for(int j=0; j<M; j++){
+      printf("%.0f\t", A_subset[i][j]);
+    }
+    printf("\n");
+  }
+}
+
+void print_result(double result[M][N]){
+  printf("Printing result\n");
+  for(int i=0; i<M; i++){
+    for(int j=0; j<N; j++){
+      printf("%.0f\t", result[i][j]);
+    }
+    printf("\n");
+  }
+}
+
 void print_A(double A[N][M]){
   for(int i=0; i<N; i++){
     for(int j=0; j<M; j++){
-      printf("%.01f  ", A[i][j]);
+      printf("%.0f\t", A[i][j]);
     }
     printf("\n");
   }
@@ -164,15 +213,16 @@ void init_mat(double mat[M][L/M], double F[L]){
 
 void print_F(double F[L]){
   for(int i=0; i<L; i++){
-    printf("%.01f ", F[i]);
+    printf("%.0f ", F[i]);
   }
   printf("\n");
 }
 
 void print_mat(double mat[M][L/M]){
+  printf("Printing Mat\n");
   for(int i=0; i<M; i++){
     for(int j=0; j<L/M; j++){
-      printf("%.01f  ", mat[i][j]);
+      printf("%.0f  ", mat[i][j]);
     }
     printf("\n");
   }
