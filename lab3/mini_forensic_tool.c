@@ -60,7 +60,8 @@ int main(){
     double A_subset[M][M];
     double F_subset[M][N];
     double A_subset_inverse[M][M];
-    
+    char* I[1024];
+    fill_I(I);
     int l = 128;
     int m = 30;
     int t = 1024;
@@ -68,6 +69,7 @@ int main(){
 
 	char *data = "data to be compressed by our huffman algorithm";
     char buf[1024];
+    char MP[1024];
 
     printf("SENDER START\n\n");
     
@@ -76,19 +78,17 @@ int main(){
     // M ← Compress(Mi)
     init(data);
 	compress(data, buf);
- 
-    printf("Compressed: %s\n", buf);
     
+    printf("Compressed: %s\n", buf);
+    strcpy(MP,buf);
 
-
+    //Encrypt MP
+    //HMAC C
+    
+    concat_hash(MP, I);
 
 
     disperse(F, A, mat, Mult);
-
-
-
-
-
     printf("SENDER END\n\n");
     printf("RECEIVER START\n\n");
 
@@ -107,7 +107,11 @@ int main(){
 
 
 
-
+void fill_I(char I[1024]){
+    for (int i = 0; i < 10; i++){
+        sprintf(I[i], "%d", i);
+    }
+}
 
 
 
@@ -116,7 +120,7 @@ void concat_hash(char* string1, char* string2) {
     strcpy(global_concat_hash, string1);
     strcat(global_concat_hash, string2);
     hash_string(global_concat_hash);
-    strcpy(string1, global_hash);
+    //strcpy(string1, global_hash);
     //printf("parent node hash: %s\n global hash:");
 }
 

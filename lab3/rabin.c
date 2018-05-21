@@ -3,6 +3,8 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include "inverse.h"
+#include "matrixMult.h"
 
 #define M 4
 #define N 8
@@ -17,7 +19,7 @@ void print_A(double A[N][M]);
 void get_subset_A(double A[N][M], double A_subset[M][M]);
 void get_subset_F(double F[N][N], double F_subset[M][N]);
 int check_for_duplicates(int temp[4], int x);
-void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N]);
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N],double result[M][N]);
 
 int main() {
   srand(time(NULL));
@@ -31,7 +33,7 @@ int main() {
   double A_subset_inverse[M][M];
 
   disperse(F, A, mat, Mult); //will be only diperse call
-  recover(A, F, A_subset_inverse, A_subset, F_subset);
+  recover(A, F, A_subset_inverse, A_subset, F_subset, result);
 }
 
 void disperse(double F[L], double A[N][M], double mat[M][N], double Mult[N][N]){
@@ -92,18 +94,21 @@ void get_subset_F(double F[N][N], double F_subset[M][N]){
   }
 }
 
-void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N]){
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N],double result[M][N]){
   get_subset_A(A, A_subset);
   get_subset_F(F, F_subset);
   //calculate inverse of A subset
+  inverseFunc(A_subset, A_subset_inverse);
   // multiply_matrices(A_subset_inverse, F_subset, result[M][N]);
+  matrixMult(A_subset_inverse, F_subset,recover);
   //result contains M
+  print_Mult(result);
 }
 
 void print_Mult(double Mult[N][N]){
   for(int i=0; i<N; i++){
     for(int j=0; j<N; j++){
-      printf("%.01f  ", Mult[i][j]);
+      printf("%.0f\t", Mult[i][j]);
     }
     printf("\n");
   }

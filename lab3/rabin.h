@@ -19,7 +19,7 @@ void print_A(double A[N][M]);
 void get_subset_A(double A[N][M], double A_subset[M][M]);
 void get_subset_F(double F[N][N], double F_subset[M][N]);
 int check_for_duplicates(int temp[4], int x);
-void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N]);
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N],double result[M][N]);
 
 
 void disperse(double F[L], double A[N][M], double mat[M][N], double Mult[N][N]){
@@ -80,11 +80,13 @@ void get_subset_F(double F[N][N], double F_subset[M][N]){
   }
 }
 
-void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N]){
+void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], double A_subset[M][M], double F_subset[M][N],double result[M][N]){
   get_subset_A(A, A_subset);
   get_subset_F(F, F_subset);
   //calculate inverse of A subset
+  inverseFunc(A_subset, A_subset_inverse);
   // multiply_matrices(A_subset_inverse, F_subset, result[M][N]);
+  matrixMult(A_subset_inverse, F_subset,recover);
   //result contains M
 }
 
