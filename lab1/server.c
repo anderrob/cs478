@@ -8,7 +8,7 @@
 #include <sys/time.h>
 #include "openssl/sha.h"
 #define PORT 8080
-
+#define K 8
 
 // Networking crap, seriously just makes things easier to use globals
 // for this since it's just a one-to-one message send/receive
@@ -47,6 +47,7 @@ int main(int argc, char const *argv[])
     printf("%s\n", receive_message());
     gettimeofday(&t1, NULL);
     while( count < 1000){
+      printf("\nNumber of puzzles solved: %d\n", count);
       memset(hash, '\0', sizeof(hash));
       memset(hash2, '\0', sizeof(hash2));
       memset(pre_image, '\0', sizeof(pre_image));
@@ -118,14 +119,14 @@ char* remove_bits(int k, char* s){
 }
 
 char* generate_puzzle(){
-  char message[12];
+
   int num = random_number();
   number_to_string(num);
   hash_string(random_string);
   strcpy(hash2, hash);
   binary = stringToBinary(hash2);
   hash_string(binary);
-  removed = remove_bits(16, binary);
+  removed = remove_bits(K, binary);
 }
 
 
