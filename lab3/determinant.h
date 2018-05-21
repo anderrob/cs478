@@ -6,7 +6,7 @@
 #include <time.h>
 #include <math.h>
 #define SIZE 8
-
+//int SIZE = 4;
 
 
 
