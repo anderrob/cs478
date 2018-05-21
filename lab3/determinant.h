@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#define SIZE 8
+#define SIZE 4
 //int SIZE = 4;
 
 

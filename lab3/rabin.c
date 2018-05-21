@@ -102,7 +102,7 @@ void recover(double A[N][M], double F[N][N], double A_subset_inverse[M][M], doub
   print_A_subset(A_subset);
   //calculate inverse of A subset
   // inverseFunc(A_subset, A_subset_inverse);
-  inverseFunc(A_subset, A_subset_inverse);
+  invert(A_subset, A_subset_inverse);
   print_A_subset_inverse(A_subset_inverse);
   // multiply_matrices(A_subset_inverse, F_subset, result[M][N]);
   multiply_matrices2(A_subset_inverse, F_subset, result);
