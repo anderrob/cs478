@@ -7,7 +7,7 @@
 #include <openssl/sha.h>
 //#include <string>
 #define PORT 8080
-#define K 20
+#define K 8
 
 
 

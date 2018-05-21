@@ -8,7 +8,7 @@
 #include <sys/time.h>
 #include "openssl/sha.h"
 #define PORT 8080
-#define K 20
+#define K 8
 
 // Networking crap, seriously just makes things easier to use globals
 // for this since it's just a one-to-one message send/receive
