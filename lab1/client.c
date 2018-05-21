@@ -7,7 +7,9 @@
 #include <openssl/sha.h>
 //#include <string>
 #define PORT 8080
-//using namespace std;
+#define K 20
+
+
 
 long BUFFER_SIZE = 4096;
 int sock = 0, valread;
@@ -17,7 +19,7 @@ char hash[SHA_DIGEST_LENGTH*2] = {0};
 char hash2[SHA_DIGEST_LENGTH*2] = {0};
 char* removed;
 struct sockaddr_in address,serv_addr;
-char guess[8];
+
 
 void start_networking();
 char* receive_message();
@@ -45,7 +47,7 @@ int main(int argc, char const *argv[])
       send_message("Got the hash value\n");
       strcpy(pre_image, receive_message());
 
-      for(int i=0; i<65536; i++){
+      for(int i=0; i<(pow(2,K)); i++){
         memset(&result[0], '\0', sizeof(result));
         strncpy(result, pre_image, sizeof(pre_image));
         strcat(result, itob(i));
@@ -55,7 +57,7 @@ int main(int argc, char const *argv[])
           receive_message();
           send_message("Thank you");
           break;
-        } else if(i == 65535){
+        } else if(i == (pow(2,K)-1)){
           printf("Can't solve the puzzle\n\n");
           send_message("can't solve");
           receive_message();
@@ -84,11 +86,11 @@ void hash_string(char* s) {
 }
 
 char* itob(int i) {
-   static char bits[16] = {'0'};
-   for(int i=0; i<16; i++){
+   static char bits[K] = {'0'};
+   for(int i=0; i<K; i++){
      bits[i] = '0';
    }
-   int bits_index = 15;
+   int bits_index = K-1;
    while ( i > 0 ) {
       bits[bits_index--] = (i & 1) + '0';
       i = ( i >> 1);
